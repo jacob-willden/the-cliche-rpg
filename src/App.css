@@ -1,5 +1,63 @@
-#root {
+#game {
 	margin: 0 auto;
 	padding: 2rem;
+	display: grid;
+	grid-template-areas: 
+		"top-left top-right"
+		"center-left center-right"
+		"bottom-full bottom-full"
+	;
 }
 
+#options-button {
+	width: 8rem;
+	grid-area: top-left;
+}
+
+#inventory-button {
+	width: 8rem;
+	grid-area: top-right;
+	justify-self: end;
+}
+
+#choices-view {
+	grid-area: center-left;
+	padding: 1rem 1rem 0 0;
+}
+
+#choices-list {
+	display: flex;
+	flex-direction: column;
+}
+
+#choices-view button {
+	margin-bottom: 1rem;
+	max-width: 18rem;
+}
+
+#reserves {
+	grid-area: center-right;
+	padding: 1rem 0 0 1rem;
+}
+
+#reserves output {
+	display: block;
+	text-align: right;
+}
+
+#primary-textbox {
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	grid-area: bottom-full;
+}
+
+#primary-textbox p {
+	width: 100%;
+}
+
+#primary-textbox .next-button {
+	width: 6rem;
+	margin-top: 1rem;
+}
