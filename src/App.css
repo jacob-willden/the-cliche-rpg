@@ -61,3 +61,7 @@
 	width: 6rem;
 	margin-top: 1rem;
 }
+
+.hidden-next-button {
+	display: none;
+}
