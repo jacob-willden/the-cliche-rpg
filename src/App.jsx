@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import './bulma.min.css';
 import './App.css';
 
 function App() {
+	const [fruitChoice, setFruitChoice] = useState('non-existent fruits');
+
 	const dialogueList = [
 		{
 			id: 0,
@@ -13,20 +15,19 @@ function App() {
 			text: "Do you like apples or oranges?",
 			choices: [
 				{
+					number: 1,
 					text: "I declare that oranges are amazing!",
-					setVariable: {
-						fruitChoice: "oranges"
-					},
+					setVariable: () => setFruitChoice("oranges"),
 					jumpTo: 2,
 				},
 				{
+					number: 2,
 					text: "APPLES!",
-					setVariable: {
-						fruitChoice: "apples"
-					},
+					setVariable: () => setFruitChoice("apples"),
 					jumpTo: 3,
 				},
 				{
+					number: 3,
 					text: "None of the above.",
 					jumpTo: 4
 				}
@@ -50,11 +51,15 @@ function App() {
 			id: 5,
 			text: "So what brings you here?"
 		},
+		{
+			id: 6,
+			text: `I assume it's for more than just looking for ${fruitChoice}.`
+		}
 	];
+	
 	const [currentDialogueID, setCurrentDialogueID] = useState(0);
-	const [choiceButtons, setChoiceButtons] = useState([]);
+	const [choices, setChoices] = useState([]);
 	const [showNextButton, setShowNextButton] = useState(true);
-	//const [fruitChoice, setFruitChoice] = useState('oranges');
 
 	function nextButton() {
 		const currentDialogue = dialogueList[currentDialogueID];
@@ -63,7 +68,7 @@ function App() {
 
 		if(Object.hasOwn(nextDialogue, 'choices')) {
 			const choices = nextDialogue.choices;
-			setChoiceButtons(choices);
+			setChoices(choices);
 			setShowNextButton(false);
 			setCurrentDialogueID(nextDialogueID);
 			//console.log(choices);
@@ -78,12 +83,24 @@ function App() {
 	}
 
 	function dialogueChoiceButton(event) {
+		const number = event.target.getAttribute('data-number') * 1;
+		const variableFunction = dialogueList[currentDialogueID].choices?.find(choice => choice.number === number);
+
+		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
+		if(typeof variableFunction.setVariable === 'function') {
+			variableFunction.setVariable();
+		}
+
 		const jumpTo = event.target.getAttribute('data-jumpto') * 1;
 		setCurrentDialogueID(jumpTo);
-		setChoiceButtons([]);
+		setChoices([]);
 		setShowNextButton(true);
 		//console.log(jumpTo);
 	}
+
+	const choiceButtons = choices.map(choice => (
+		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
+	));
 	
 	return (
 		<div id='game'>
@@ -91,9 +108,7 @@ function App() {
 			<button id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
 				<div id='choices-list'>
-					{choiceButtons.map((button, index) => (
-						<button onClick={dialogueChoiceButton} data-jumpto={button.jumpTo} key={index} className='button choice'>{button.text}</button>
-					))}
+					{choiceButtons}
 				</div>
 			</div>
 			<div id='reserves'>
