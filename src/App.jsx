@@ -40,18 +40,17 @@ function App() {
 				{
 					number: 1,
 					text: "Melee",
+					doAction: () => console.log("melee + enemy attack"),
 					jumpTo: 4,
 				},
 				{
 					number: 2,
 					text: "Magic",
-					//doAction: () => {choicesRef.current = [{number: 1, text:}]},
 					jumpTo: 2,
 				},
 				{
 					number: 3,
 					text: "Items",
-					//doAction: () => {fruitChoice.current = "oranges"},
 					jumpTo: 3,
 				}
 			]
@@ -68,7 +67,8 @@ function App() {
 				{
 					number: 2,
 					text: "Magic spell 1",
-					jumpTo: 11,
+					doAction: () => console.log("magic spell 1 + enemy attack"),
+					jumpTo: 5,
 				},
 			]
 		},
@@ -84,32 +84,29 @@ function App() {
 				{
 					number: 2,
 					text: "Item 1",
-					jumpTo: 11,
+					doAction: () => console.log("item 1 + enemy attack"),
+					jumpTo: 6,
 				},
 			]
 		},
 		{
 			id: 4,
 			text: `You used your melee attack, the enemy took ${damage.current} damage.`,
-			doAction: () => console.log("melee result"),
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
 			id: 5,
 			text: `You used the ${magicChoice.current} magic attack, the enemy took ${damage.current} damage.`,
-			doAction: () => console.log("magic result"),
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
 			id: 6,
 			text: `You used the ${itemChoice.current} item, ${itemResult.current}.`,
-			doAction: () => console.log("item result"),
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
 			id: 7,
 			text: `The ${enemyName.current} attacks, you take ${damage.current} damage.`,
-			doAction: () => console.log("enemy attack result"),
 			jumpTo: playerHealthRef.current > 0 ? 1 : 10
 		},
 		{
@@ -219,11 +216,11 @@ function App() {
 
 		const nextDialogue = dialogueList[nextDialogueID];
 
-		console.log('nextDialogue:', nextDialogue);
+		//console.log('nextDialogue:', nextDialogue);
 
 		if(Object.hasOwn(nextDialogue, 'choices')) {
 			const choices = nextDialogue.choices; //dialogueList[currentDialogue.jumpTo].choices;
-			console.log('choices:', choices);
+			//console.log('choices:', choices);
 			setChoices(choices);
 			setShowNextButton(false);
 			//console.log(choices);
@@ -253,6 +250,8 @@ function App() {
 		setCurrentDialogueID(jumpTo);
 	}
 
+	const [modalVisible, setModalVisible] = useState(false);
+
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
 	));
@@ -273,6 +272,15 @@ function App() {
 			<div id='primary-textbox' className='card'>
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>
 				<button onClick={nextButton} className={`button next-button ${showNextButton ? '' : 'hidden-next-button'}`}>Next</button>
+			</div>
+			<div className={`modal ${modalVisible ? 'is-active' : ''}`}>
+				<div className='modal-background'></div>
+				<div className='modal-content'>
+					<div className='box'>
+						modalContent
+					</div>
+				</div>
+				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
 			<button onClick={() => startBattle({name: 'Slime', health: 10, experience: 5, money: 5})}>startBattle</button>
 			<button onClick={() => console.log(dialogueList[currentDialogueID])}>playerHealth</button>
