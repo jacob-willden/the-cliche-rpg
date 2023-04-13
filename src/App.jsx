@@ -5,86 +5,230 @@ import './App.css';
 function App() {
 	const [playerHealth, setPlayerHealth] = useState(1);
 	const [playerMagic, setPlayerMagic] = useState(1);
+	const playerHealthRef = useRef();
+	playerHealthRef.current = playerHealth;
+
 	const [experience, setExperience] = useState(0);
 	const [money, setMoney] = useState(0);
+	const oldDialoguePlace = useRef(0);
+
+	const enemyName = useRef('');
+	const enemyHealth = useRef(1);
+	
+	const damage = useRef(0);
+	const magicChoice = useRef('');
+	const itemChoice = useRef('');
+	const itemResult = useRef('');
+	const gainedExperience = useRef(0);
+	const gainedMoney = useRef(0);
+
+	const [choices, setChoices] = useState([]);
+	const choicesRef = useRef();
+	choicesRef.current = choices;
 	
 	const fruitChoice = useRef('non-existent fruits');
 
 	const dialogueList = [
-		{
+	    {
 			id: 0,
-			text: "Hello traveler.",
+			text: `You entered a battle with a ${enemyName.current}.`
 		},
 		{
 			id: 1,
+			text: "What will do you for this turn?",
+			choices: [
+				{
+					number: 1,
+					text: "Melee",
+					jumpTo: 4,
+				},
+				{
+					number: 2,
+					text: "Magic",
+					//doAction: () => {choicesRef.current = [{number: 1, text:}]},
+					jumpTo: 2,
+				},
+				{
+					number: 3,
+					text: "Items",
+					//doAction: () => {fruitChoice.current = "oranges"},
+					jumpTo: 3,
+				}
+			]
+		},
+		{
+			id: 2,
+			text: "Which magic move will you use?",
+			choices: [
+				{
+					number: 1,
+					text: "Go Back",
+					jumpTo: 1,
+				},
+				{
+					number: 2,
+					text: "Magic spell 1",
+					jumpTo: 11,
+				},
+			]
+		},
+		{
+			id: 3,
+			text: "Which item will you use?",
+			choices: [
+				{
+					number: 1,
+					text: "Go Back",
+					jumpTo: 1,
+				},
+				{
+					number: 2,
+					text: "Item 1",
+					jumpTo: 11,
+				},
+			]
+		},
+		{
+			id: 4,
+			text: `You used your melee attack, the enemy took ${damage.current} damage.`,
+			doAction: () => console.log("melee result"),
+			jumpTo: enemyHealth.current > 0 ? 7 : 8
+		},
+		{
+			id: 5,
+			text: `You used the ${magicChoice.current} magic attack, the enemy took ${damage.current} damage.`,
+			doAction: () => console.log("magic result"),
+			jumpTo: enemyHealth.current > 0 ? 7 : 8
+		},
+		{
+			id: 6,
+			text: `You used the ${itemChoice.current} item, ${itemResult.current}.`,
+			doAction: () => console.log("item result"),
+			jumpTo: enemyHealth.current > 0 ? 7 : 8
+		},
+		{
+			id: 7,
+			text: `The ${enemyName.current} attacks, you take ${damage.current} damage.`,
+			doAction: () => console.log("enemy attack result"),
+			jumpTo: playerHealthRef.current > 0 ? 1 : 10
+		},
+		{
+			id: 8,
+			text: `The ${enemyName.current} fell!`,
+		},
+		{
+			id: 9,
+			text: `You won the battle! You got ${gainedExperience.current} experience points and ${gainedMoney.current} gold!`,
+			jumpTo: oldDialoguePlace.current
+		},
+		{
+			id: 10,
+			text: "You lost all your health points and fell! Do you want to start the battle again?",
+			choices: [
+				{
+					number: 1,
+					text: "Yes.",
+					doAction: () => console.log("reset variables"),
+					jumpTo: 0
+				},
+				{
+					number: 2,
+					text: "No.",
+					doAction: () => console.log("end game"),
+					jumpTo: 11
+				},
+			]
+		},
+		{
+			id: 11,
+			text: "Hello traveler.",
+		},
+		{
+			id: 12,
 			text: "Do you like apples or oranges?",
 			choices: [
 				{
 					number: 1,
 					text: "I declare that oranges are amazing!",
 					doAction: () => {fruitChoice.current = "oranges"},
-					jumpTo: 2,
+					jumpTo: 13,
 				},
 				{
 					number: 2,
 					text: "APPLES!",
 					doAction: () => {fruitChoice.current = "apples"},
-					jumpTo: 3,
+					jumpTo: 14,
 				},
 				{
 					number: 3,
 					text: "None of the above.",
-					jumpTo: 4
+					jumpTo: 15
 				}
 			]
 		},
 		{
-			id: 2,
+			id: 13,
 			text: "I'll get you some orange juice then.",
-			jumpTo: 5
+			jumpTo: 16
 		},
 		{
-			id: 3,
+			id: 14,
 			text: "I'll get you some apple juice then.",
-			jumpTo: 5
+			jumpTo: 16
 		},
 		{
-			id: 4,
+			id: 15,
 			text: "Fair enough."
 		},
 		{
-			id: 5,
+			id: 16,
 			text: "So what brings you here?"
 		},
 		{
-			id: 6,
+			id: 17,
 			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
 		}
 	];
-	
-	const [currentDialogueID, setCurrentDialogueID] = useState(0);
-	const [choices, setChoices] = useState([]);
+
+	const [currentDialogueID, setCurrentDialogueID] = useState(11);
+
+	function startBattle(enemy) {
+		enemyName.current = enemy.name;
+		enemyHealth.current = enemy.health;
+		gainedExperience.current = enemy.experience;
+		gainedMoney.current = enemy.money;
+		
+		oldDialoguePlace.current = currentDialogueID;
+		//console.log(oldDialoguePlace.current);
+		setCurrentDialogueID(0);
+	}
+
 	const [showNextButton, setShowNextButton] = useState(true);
 
 	function nextButton() {
 		const currentDialogue = dialogueList[currentDialogueID];
-		const nextDialogueID = currentDialogueID + 1;
-		const nextDialogue = dialogueList[nextDialogueID];
 
-		if(Object.hasOwn(nextDialogue, 'choices')) {
-			const choices = nextDialogue.choices;
-			setChoices(choices);
-			setShowNextButton(false);
-			setCurrentDialogueID(nextDialogueID);
-			//console.log(choices);
-		}
-		else if(Object.hasOwn(currentDialogue, 'jumpTo')) {
-			setCurrentDialogueID(currentDialogue.jumpTo);
-			//console.log(currentDialogue.jumpTo);
+		let nextDialogueID;
+
+		if(Object.hasOwn(currentDialogue, 'jumpTo')) {
+			nextDialogueID = currentDialogue.jumpTo;
 		}
 		else {
-			setCurrentDialogueID(nextDialogueID);
+			nextDialogueID = currentDialogueID + 1;
 		}
+
+		const nextDialogue = dialogueList[nextDialogueID];
+
+		console.log('nextDialogue:', nextDialogue);
+
+		if(Object.hasOwn(nextDialogue, 'choices')) {
+			const choices = nextDialogue.choices; //dialogueList[currentDialogue.jumpTo].choices;
+			console.log('choices:', choices);
+			setChoices(choices);
+			setShowNextButton(false);
+			//console.log(choices);
+		}
+		setCurrentDialogueID(nextDialogueID);
 	}
 
 	function dialogueChoiceButton(event) {
@@ -97,10 +241,16 @@ function App() {
 		}
 
 		const jumpTo = event.target.getAttribute('data-jumpto') * 1;
+		const nextChoices = dialogueList[jumpTo].choices;
+		if(nextChoices) {
+			setChoices(nextChoices);
+		}
+		else {
+			setChoices([]);
+			setShowNextButton(true);
+		}
+
 		setCurrentDialogueID(jumpTo);
-		setChoices([]);
-		setShowNextButton(true);
-		//console.log(jumpTo);
 	}
 
 	const choiceButtons = choices.map(choice => (
@@ -124,6 +274,8 @@ function App() {
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>
 				<button onClick={nextButton} className={`button next-button ${showNextButton ? '' : 'hidden-next-button'}`}>Next</button>
 			</div>
+			<button onClick={() => startBattle({name: 'Slime', health: 10, experience: 5, money: 5})}>startBattle</button>
+			<button onClick={() => console.log(dialogueList[currentDialogueID])}>playerHealth</button>
 		</div>
 	);
 }
