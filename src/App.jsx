@@ -1,9 +1,14 @@
-import {useState} from 'react';
+import {useState, useRef} from 'react';
 import './bulma.min.css';
 import './App.css';
 
 function App() {
-	const [fruitChoice, setFruitChoice] = useState('non-existent fruits');
+	const [playerHealth, setPlayerHealth] = useState(1);
+	const [playerMagic, setPlayerMagic] = useState(1);
+	const [experience, setExperience] = useState(0);
+	const [money, setMoney] = useState(0);
+	
+	const fruitChoice = useRef('non-existent fruits');
 
 	const dialogueList = [
 		{
@@ -17,13 +22,13 @@ function App() {
 				{
 					number: 1,
 					text: "I declare that oranges are amazing!",
-					setVariable: () => setFruitChoice("oranges"),
+					doAction: () => {fruitChoice.current = "oranges"},
 					jumpTo: 2,
 				},
 				{
 					number: 2,
 					text: "APPLES!",
-					setVariable: () => setFruitChoice("apples"),
+					doAction: () => {fruitChoice.current = "apples"},
 					jumpTo: 3,
 				},
 				{
@@ -53,7 +58,7 @@ function App() {
 		},
 		{
 			id: 6,
-			text: `I assume it's for more than just looking for ${fruitChoice}.`
+			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
 		}
 	];
 	
@@ -87,8 +92,8 @@ function App() {
 		const variableFunction = dialogueList[currentDialogueID].choices?.find(choice => choice.number === number);
 
 		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
-		if(typeof variableFunction.setVariable === 'function') {
-			variableFunction.setVariable();
+		if(typeof variableFunction.doAction === 'function') {
+			variableFunction.doAction();
 		}
 
 		const jumpTo = event.target.getAttribute('data-jumpto') * 1;
@@ -112,8 +117,8 @@ function App() {
 				</div>
 			</div>
 			<div id='reserves'>
-				<output><span id='experience'>0</span> Experience</output>
-				<output><span id='money'>0</span> Gold</output>
+				<output><span id='experience'>{experience}</span> Experience</output>
+				<output><span id='money'>{money}</span> Gold</output>
 			</div>
 			<div id='primary-textbox' className='card'>
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>
