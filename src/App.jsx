@@ -6,7 +6,7 @@ function App() {
 	const [playerHealth, setPlayerHealth] = useState(1);
 	const [playerMagic, setPlayerMagic] = useState(1);
 	const playerHealthRef = useRef();
-	playerHealthRef.current = playerHealth;
+	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
 
 	const [experience, setExperience] = useState(0);
 	const [money, setMoney] = useState(0);
