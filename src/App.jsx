@@ -3,11 +3,11 @@ import './bulma.min.css';
 import './App.css';
 
 function App() {
-	const [playerHealth, setPlayerHealth] = useState(1);
+	const [playerHealth, setPlayerHealth] = useState(100);
 	const playerHealthRef = useRef();
 	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
 	
-	const [playerMagic, setPlayerMagic] = useState(1);
+	const [playerMagic, setPlayerMagic] = useState(100);
 	const playerMagicRef = useRef();
 	playerMagicRef.current = playerMagic;
 
@@ -26,7 +26,9 @@ function App() {
 	const enemyName = useRef('');
 	const enemyHealth = useRef(1);
 	
-	const damage = useRef(0);
+	const playerDamage = useRef(0);
+	const enemyDamage = useRef(0);
+
 	const magicChoice = useRef('');
 	const itemChoice = useRef('');
 	const itemResult = useRef('');
@@ -51,7 +53,7 @@ function App() {
 				{
 					number: 1,
 					text: "Melee",
-					doAction: () => console.log("melee + enemy attack"),
+					doAction: () => calculateTurnResult('melee'),
 					jumpTo: 4,
 				},
 				{
@@ -78,7 +80,7 @@ function App() {
 				{
 					number: 2,
 					text: "Magic spell 1",
-					doAction: () => console.log("magic spell 1 + enemy attack"),
+					doAction: () => calculateTurnResult('magic', 1),
 					jumpTo: 5,
 				},
 			]
@@ -95,19 +97,19 @@ function App() {
 				{
 					number: 2,
 					text: "Item 1",
-					doAction: () => console.log("item 1 + enemy attack"),
+					doAction: () => calculateTurnResult('item', 1),
 					jumpTo: 6,
 				},
 			]
 		},
 		{
 			id: 4,
-			text: `You used your melee attack, the enemy took ${damage.current} damage.`,
+			text: `You used your melee attack, the enemy took ${enemyDamage.current} damage.`,
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
 			id: 5,
-			text: `You used the ${magicChoice.current} magic attack, the enemy took ${damage.current} damage.`,
+			text: `You used the ${magicChoice.current} magic attack, the enemy took ${enemyDamage.current} damage.`,
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
@@ -117,7 +119,7 @@ function App() {
 		},
 		{
 			id: 7,
-			text: `The ${enemyName.current} attacks, you take ${damage.current} damage.`,
+			text: `The ${enemyName.current} attacks, you take ${playerDamage.current} damage.`,
 			jumpTo: playerHealthRef.current > 0 ? 1 : 10
 		},
 		{
@@ -209,6 +211,32 @@ function App() {
 		oldDialoguePlace.current = currentDialogueID;
 		//console.log(oldDialoguePlace.current);
 		setCurrentDialogueID(0);
+	}
+
+	function calculateTurnResult(choiceCategory, choiceSelection = 0) {
+		console.log(`${choiceCategory} ${choiceSelection || ''} + enemy attack`);
+		
+		if(choiceCategory === 'magic') {
+			enemyDamage.current = 2;
+			playerMagicRef.current -= 5;
+			setPlayerMagic(playerMagicRef.current);
+		}
+		else if(choiceCategory === 'item') {
+			playerHealthRef.current += 5;
+			if(playerHealthRef.current > maxPlayerHealth) {
+				playerHealthRef.current = maxPlayerHealth;
+			}
+			// Subtract item from inventory
+		}
+		else { // Melee
+			enemyDamage.current = 1;
+		}
+		
+		enemyHealth.current -= enemyDamage.current;
+
+		playerDamage.current = 1;
+		playerHealthRef.current -= playerDamage.current;
+		setPlayerHealth(playerHealthRef.current);
 	}
 
 	const [showNextButton, setShowNextButton] = useState(true);
@@ -304,7 +332,7 @@ function App() {
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
 			<button onClick={() => startBattle({name: 'Slime', health: 10, experience: 5, money: 5})}>startBattle</button>
-			<button onClick={() => console.log(dialogueList[currentDialogueID])}>playerHealth</button>
+			<button onClick={() => console.log(dialogueList[currentDialogueID])}>currentDialogueID</button>
 		</div>
 	);
 }
