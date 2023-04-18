@@ -4,9 +4,20 @@ import './App.css';
 
 function App() {
 	const [playerHealth, setPlayerHealth] = useState(1);
-	const [playerMagic, setPlayerMagic] = useState(1);
 	const playerHealthRef = useRef();
 	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
+	
+	const [playerMagic, setPlayerMagic] = useState(1);
+	const playerMagicRef = useRef();
+	playerMagicRef.current = playerMagic;
+
+	const [maxPlayerHealth, setMaxPlayerHealth] = useState(100);
+	const maxPlayerHealthRef = useRef();
+	maxPlayerHealthRef.current = maxPlayerHealth;
+
+	const [maxPlayerMagic, setMaxPlayerMagic] = useState(100);
+	const maxPlayerMagicRef = useRef();
+	maxPlayerMagicRef.current = maxPlayerMagic;
 
 	const [experience, setExperience] = useState(0);
 	const [money, setMoney] = useState(0);
@@ -266,8 +277,18 @@ function App() {
 				</div>
 			</div>
 			<div id='reserves'>
-				<output><span id='experience'>{experience}</span> Experience</output>
-				<output><span id='money'>{money}</span> Gold</output>
+				<output>
+					Health: <span id='health'>{playerHealth}</span> / <span id='max-health'>{maxPlayerHealth}</span>
+				</output>
+				<output>
+					Magic: <span id='magic'>{playerMagic}</span> / <span id='max-magic'>{maxPlayerMagic}</span>
+				</output>
+				<output>
+					Experience: <span id='experience'>{experience}</span>
+				</output>
+				<output>
+					Gold: <span id='money'>{money}</span>
+				</output>
 			</div>
 			<div id='primary-textbox' className='card'>
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>

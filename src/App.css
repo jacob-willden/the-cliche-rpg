@@ -23,6 +23,7 @@
 #choices-view {
 	grid-area: center-left;
 	padding: 1rem 1rem 0 0;
+	min-height: 11.5rem;
 }
 
 #choices-list {
@@ -47,6 +48,7 @@
 
 #primary-textbox {
 	padding: 1rem;
+	min-height: 7rem;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
