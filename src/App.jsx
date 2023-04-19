@@ -129,7 +129,7 @@ function App() {
 		},
 		{
 			id: 6,
-			text: `You used the ${itemChoice.current} item, ${itemResult.current}.`,
+			text: `You used the ${itemChoice.current} item. ${itemResult.current}.`,
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
@@ -237,9 +237,13 @@ function App() {
 			playerMagicRef.current -= 5;
 		}
 		else if(decision.category === 'item') {
-			const playerEffects = playerItemsRef.current.find(item => item.id === selection).playerEffects;
+			const chosenItem = playerItemsRef.current.find(item => item.id === selection);
+			itemChoice.current = chosenItem.text;
+
+			const playerEffects = chosenItem.playerEffects;
 			playerHealthRef.current += playerEffects.health || 0;
 			playerMagicRef.current += playerEffects.magic || 0;
+			itemResult.current = `You gained ${playerEffects.health || ''}${playerEffects.health ? ' health' : ''}${playerEffects.health && playerEffects.magic ? ' and ' : ''}${playerEffects.magic || ''} ${playerEffects.magic ? ' magic' : ''} back`;
 
 			if(playerHealthRef.current > maxPlayerHealth) {
 				playerHealthRef.current = maxPlayerHealth;
