@@ -22,7 +22,11 @@ function App() {
 	const [playerItems, setPlayerItems] = useState([
 		{
 			id: 0,
-			text: 'Health Potion'
+			text: 'Health Potion',
+			playerEffects: {
+				health: 10,
+				magic: 5
+			}
 		}
 	]);
 	const playerItemsRef = useRef();
@@ -231,19 +235,28 @@ function App() {
 		if(decision.category === 'magic') {
 			enemyDamage.current = 2;
 			playerMagicRef.current -= 5;
-			setPlayerMagic(playerMagicRef.current);
 		}
 		else if(decision.category === 'item') {
-			playerHealthRef.current += 5;
+			const playerEffects = playerItemsRef.current.find(item => item.id === selection).playerEffects;
+			playerHealthRef.current += playerEffects.health || 0;
+			playerMagicRef.current += playerEffects.magic || 0;
+
 			if(playerHealthRef.current > maxPlayerHealth) {
 				playerHealthRef.current = maxPlayerHealth;
 			}
+			if(playerMagicRef.current > maxPlayerMagic) {
+				playerMagicRef.current = maxPlayerMagic;
+			}
+
+			//console.log('playerHealthRef.current:', playerHealthRef.current);
+
 			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
 			setPlayerItems(playerItemsRef.current);
 		}
 		else { // Melee
 			enemyDamage.current = 1;
 		}
+		setPlayerMagic(playerMagicRef.current);
 		
 		enemyHealth.current -= enemyDamage.current;
 
@@ -339,7 +352,7 @@ function App() {
 				<div className='modal-background'></div>
 				<div className='modal-content'>
 					<div className='box'>
-						<ModalContent menu={optionsOrInventory.current} />
+						modalContent
 					</div>
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
