@@ -19,6 +19,15 @@ function App() {
 	const maxPlayerMagicRef = useRef();
 	maxPlayerMagicRef.current = maxPlayerMagic;
 
+	const [playerItems, setPlayerItems] = useState([
+		{
+			id: 0,
+			text: 'Health Potion'
+		}
+	]);
+	const playerItemsRef = useRef();
+	playerItemsRef.current = playerItems;
+
 	const [experience, setExperience] = useState(0);
 	const [money, setMoney] = useState(0);
 	const oldDialoguePlace = useRef(0);
@@ -53,7 +62,7 @@ function App() {
 				{
 					number: 1,
 					text: "Melee",
-					doAction: () => calculateTurnResult('melee'),
+					doAction: () => getTurnResult({category: 'melee'}),
 					jumpTo: 4,
 				},
 				{
@@ -80,7 +89,7 @@ function App() {
 				{
 					number: 2,
 					text: "Magic spell 1",
-					doAction: () => calculateTurnResult('magic', 1),
+					doAction: () => getTurnResult({category: 'magic', selection: 2}),
 					jumpTo: 5,
 				},
 			]
@@ -94,12 +103,14 @@ function App() {
 					text: "Go Back",
 					jumpTo: 1,
 				},
-				{
-					number: 2,
-					text: "Item 1",
-					doAction: () => calculateTurnResult('item', 1),
-					jumpTo: 6,
-				},
+				...playerItems.map((item, index) => {
+					return {
+						number: index + 2,
+						doAction: () => getTurnResult({category: 'item', selection: index}),
+						jumpTo: 6,
+						...item
+					}
+				})
 			]
 		},
 		{
@@ -213,20 +224,22 @@ function App() {
 		setCurrentDialogueID(0);
 	}
 
-	function calculateTurnResult(choiceCategory, choiceSelection = 0) {
-		console.log(`${choiceCategory} ${choiceSelection || ''} + enemy attack`);
+	function getTurnResult(decision) {
+		const selection = decision.selection; // Fetch from choice objects based on decision.selection?
+		console.log(`${decision.category} ${selection} + enemy attack`);
 		
-		if(choiceCategory === 'magic') {
+		if(decision.category === 'magic') {
 			enemyDamage.current = 2;
 			playerMagicRef.current -= 5;
 			setPlayerMagic(playerMagicRef.current);
 		}
-		else if(choiceCategory === 'item') {
+		else if(decision.category === 'item') {
 			playerHealthRef.current += 5;
 			if(playerHealthRef.current > maxPlayerHealth) {
 				playerHealthRef.current = maxPlayerHealth;
 			}
-			// Subtract item from inventory
+			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
+			setPlayerItems(playerItemsRef.current);
 		}
 		else { // Melee
 			enemyDamage.current = 1;
@@ -326,7 +339,7 @@ function App() {
 				<div className='modal-background'></div>
 				<div className='modal-content'>
 					<div className='box'>
-						modalContent
+						<ModalContent menu={optionsOrInventory.current} />
 					</div>
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
