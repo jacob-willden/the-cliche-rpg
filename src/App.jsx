@@ -138,7 +138,7 @@ function App() {
 		},
 		{
 			id: 5,
-			text: `You used the ${magicChoice.current} magic attack, the enemy took ${enemyDamage.current} damage.`,
+			text: `You used the ${magicChoice.current} move, the enemy took ${enemyDamage.current} damage.`,
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
@@ -274,6 +274,7 @@ function App() {
 				playerMagicRef.current = 0;
 			}
 
+			magicChoice.current = chosenMove.text;
 			enemyHealth.current -= enemyDamage.current;
 		}
 		else if(decision.category === 'item') {
