@@ -49,6 +49,7 @@ function App() {
 
 	const enemyName = useRef('');
 	const enemyHealth = useRef(1);
+	const enemyPower = useRef(1);
 	
 	const playerDamage = useRef(0);
 	const enemyDamage = useRef(0);
@@ -238,6 +239,7 @@ function App() {
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
 		enemyHealth.current = enemy.health;
+		enemyPower.current = enemy.attack;
 		gainedExperience.current = enemy.experience;
 		gainedMoney.current = enemy.money;
 		
@@ -246,8 +248,8 @@ function App() {
 		setCurrentDialogueID(0);
 	}
 
-	function enemyAttack(damage) {
-		playerDamage.current = damage;
+	function enemyAttack() {
+		playerDamage.current = enemyPower.current;
 		playerHealthRef.current -= playerDamage.current;
 		setPlayerHealth(playerHealthRef.current);
 	}
@@ -262,7 +264,7 @@ function App() {
 			if(playerMagicRef.current >= chosenMove.effects.magicCost) {
 				enemyDamage.current = chosenMove.effects.enemyDamage;
 				playerMagicRef.current -= chosenMove.effects.magicCost;
-				enemyAttack(1); // Hardcoded for now
+				enemyAttack();
 			}
 			else {
 				enemyDamage.current = 0;
@@ -271,6 +273,8 @@ function App() {
 			if(playerMagicRef.current < 0) {
 				playerMagicRef.current = 0;
 			}
+
+			enemyHealth.current -= enemyDamage.current;
 		}
 		else if(decision.category === 'item') {
 			const chosenItem = playerItemsRef.current.find(item => item.id === selection);
@@ -278,6 +282,7 @@ function App() {
 
 			const playerEffects = chosenItem.playerEffects;
 			playerHealthRef.current += playerEffects.health || 0;
+			console.log('playerEffects.health:', playerEffects.health);
 			playerMagicRef.current += playerEffects.magic || 0;
 			itemResult.current = `You gained ${playerEffects.health || ''}${playerEffects.health ? ' health' : ''}${playerEffects.health && playerEffects.magic ? ' and ' : ''}${playerEffects.magic || ''} ${playerEffects.magic ? ' magic' : ''} back`;
 
@@ -293,15 +298,15 @@ function App() {
 			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
 			setPlayerItems(playerItemsRef.current);
 
-			enemyAttack(1); // Hardcoded for now
+			enemyAttack(); // Hardcoded for now
 		}
 		else { // Melee
 			enemyDamage.current = 1;
-			enemyAttack(1); // Hardcoded for now
+			enemyHealth.current -= enemyDamage.current;
+			enemyAttack(); // Hardcoded for now
 		}
 		setPlayerMagic(playerMagicRef.current);
-		
-		enemyHealth.current -= enemyDamage.current;
+		setPlayerHealth(playerHealthRef.current);
 	}
 
 	const [showNextButton, setShowNextButton] = useState(true);
@@ -396,7 +401,7 @@ function App() {
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
-			<button onClick={() => startBattle({name: 'Slime', health: 10, experience: 5, money: 5})}>startBattle</button>
+			<button onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 5, money: 5})}>startBattle</button>
 			<button onClick={() => console.log(enemyHealth.current)}>enemyHealth.current</button>
 		</div>
 	);
