@@ -7,7 +7,7 @@ function App() {
 	const playerHealthRef = useRef();
 	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
 	
-	const [playerMagic, setPlayerMagic] = useState(100);
+	const [playerMagic, setPlayerMagic] = useState(2);
 	const playerMagicRef = useRef();
 	playerMagicRef.current = playerMagic;
 
@@ -18,6 +18,17 @@ function App() {
 	const [maxPlayerMagic, setMaxPlayerMagic] = useState(100);
 	const maxPlayerMagicRef = useRef();
 	maxPlayerMagicRef.current = maxPlayerMagic;
+
+	const playerMagicMoves = [
+		{
+			id: 0,
+			text: "Magic Attack",
+			effects: {
+				enemyDamage: 5,
+				magicCost: 2
+			}
+		}
+	];
 
 	const [playerItems, setPlayerItems] = useState([
 		{
@@ -90,12 +101,14 @@ function App() {
 					text: "Go Back",
 					jumpTo: 1,
 				},
-				{
-					number: 2,
-					text: "Magic spell 1",
-					doAction: () => getTurnResult({category: 'magic', selection: 2}),
-					jumpTo: 5,
-				},
+				...playerMagicMoves.map((move, index) => {
+					return {
+						number: index + 2,
+						doAction: () => getTurnResult({category: 'magic', selection: index}),
+						jumpTo: playerMagicRef.current >= move.effects.magicCost ? 5 : 11,
+						...move
+					}
+				}),
 			]
 		},
 		{
@@ -114,7 +127,7 @@ function App() {
 						jumpTo: 6,
 						...item
 					}
-				})
+				}),
 			]
 		},
 		{
@@ -160,62 +173,67 @@ function App() {
 					number: 2,
 					text: "No.",
 					doAction: () => console.log("end game"),
-					jumpTo: 11
+					jumpTo: 12
 				},
 			]
 		},
 		{
 			id: 11,
-			text: "Hello traveler.",
+			text: "You don't have enough magic points to make that move.",
+			jumpTo: 2
 		},
 		{
 			id: 12,
+			text: "Hello traveler.",
+		},
+		{
+			id: 13,
 			text: "Do you like apples or oranges?",
 			choices: [
 				{
 					number: 1,
 					text: "I declare that oranges are amazing!",
 					doAction: () => {fruitChoice.current = "oranges"},
-					jumpTo: 13,
+					jumpTo: 14,
 				},
 				{
 					number: 2,
 					text: "APPLES!",
 					doAction: () => {fruitChoice.current = "apples"},
-					jumpTo: 14,
+					jumpTo: 15,
 				},
 				{
 					number: 3,
 					text: "None of the above.",
-					jumpTo: 15
+					jumpTo: 16
 				}
 			]
 		},
 		{
-			id: 13,
-			text: "I'll get you some orange juice then.",
-			jumpTo: 16
-		},
-		{
 			id: 14,
-			text: "I'll get you some apple juice then.",
-			jumpTo: 16
+			text: "I'll get you some orange juice then.",
+			jumpTo: 17
 		},
 		{
 			id: 15,
-			text: "Fair enough."
+			text: "I'll get you some apple juice then.",
+			jumpTo: 17
 		},
 		{
 			id: 16,
-			text: "So what brings you here?"
+			text: "Fair enough."
 		},
 		{
 			id: 17,
+			text: "So what brings you here?"
+		},
+		{
+			id: 18,
 			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
 		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(11);
+	const [currentDialogueID, setCurrentDialogueID] = useState(12);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -228,13 +246,31 @@ function App() {
 		setCurrentDialogueID(0);
 	}
 
+	function enemyAttack(damage) {
+		playerDamage.current = damage;
+		playerHealthRef.current -= playerDamage.current;
+		setPlayerHealth(playerHealthRef.current);
+	}
+
 	function getTurnResult(decision) {
-		const selection = decision.selection; // Fetch from choice objects based on decision.selection?
-		console.log(`${decision.category} ${selection} + enemy attack`);
+		const selection = decision.selection;
+		//console.log(`${decision.category} ${selection} + enemy attack`);
 		
 		if(decision.category === 'magic') {
-			enemyDamage.current = 2;
-			playerMagicRef.current -= 5;
+			const chosenMove = playerMagicMoves.find(move => move.id === selection);
+
+			if(playerMagicRef.current >= chosenMove.effects.magicCost) {
+				enemyDamage.current = chosenMove.effects.enemyDamage;
+				playerMagicRef.current -= chosenMove.effects.magicCost;
+				enemyAttack(1); // Hardcoded for now
+			}
+			else {
+				enemyDamage.current = 0;
+			}
+
+			if(playerMagicRef.current < 0) {
+				playerMagicRef.current = 0;
+			}
 		}
 		else if(decision.category === 'item') {
 			const chosenItem = playerItemsRef.current.find(item => item.id === selection);
@@ -256,17 +292,16 @@ function App() {
 
 			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
 			setPlayerItems(playerItemsRef.current);
+
+			enemyAttack(1); // Hardcoded for now
 		}
 		else { // Melee
 			enemyDamage.current = 1;
+			enemyAttack(1); // Hardcoded for now
 		}
 		setPlayerMagic(playerMagicRef.current);
 		
 		enemyHealth.current -= enemyDamage.current;
-
-		playerDamage.current = 1;
-		playerHealthRef.current -= playerDamage.current;
-		setPlayerHealth(playerHealthRef.current);
 	}
 
 	const [showNextButton, setShowNextButton] = useState(true);
@@ -362,7 +397,7 @@ function App() {
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
 			<button onClick={() => startBattle({name: 'Slime', health: 10, experience: 5, money: 5})}>startBattle</button>
-			<button onClick={() => console.log(dialogueList[currentDialogueID])}>currentDialogueID</button>
+			<button onClick={() => console.log(enemyHealth.current)}>enemyHealth.current</button>
 		</div>
 	);
 }
