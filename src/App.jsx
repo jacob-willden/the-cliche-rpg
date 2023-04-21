@@ -37,11 +37,29 @@ function App() {
 			playerEffects: {
 				health: 10,
 				magic: 5
+			},
+			price: 10
+		},
+		{
+			id: 1,
+			text: 'Tonic Booster',
+			playerEffects: {
+				powerAmount: 2,
+				powerTurns: 3,
+				defenseAmount: 2,
+				defenseTurns: 3
 			}
 		}
 	]);
 	const playerItemsRef = useRef();
 	playerItemsRef.current = playerItems;
+
+	const playerPower = useRef(1);
+	const playerDefense = useRef(1);
+	const playerPowerBoost = useRef(1);
+	const playerDefenseBoost = useRef(1);
+	const playerPowerBoostTurnsLeft = useRef(0);
+	const playerDefenseBoostTurnsLeft = useRef(0);
 
 	const [experience, setExperience] = useState(0);
 	const [money, setMoney] = useState(0);
@@ -143,7 +161,7 @@ function App() {
 		},
 		{
 			id: 6,
-			text: `You used the ${itemChoice.current} item. ${itemResult.current}.`,
+			text: `You used the ${itemChoice.current} item. ${itemResult.current}`,
 			jumpTo: enemyHealth.current > 0 ? 7 : 8
 		},
 		{
@@ -231,6 +249,42 @@ function App() {
 		{
 			id: 18,
 			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
+		},
+		{
+			id: 19,
+			text: "Would you like to buy something?",
+			choices: [
+				{
+					number: 1,
+					text: "That's all, thank you.",
+					jumpTo: 14,
+				},
+				{
+					number: 2,
+					text: "Health Potion - 10 Gold",
+					doAction: () => purchaseItem(),
+					jumpTo: 15,
+				},
+				...playerMagicMoves.map((move, index) => {
+					return {
+						number: index + 2,
+						doAction: () => getTurnResult({category: 'magic', selection: index}),
+						jumpTo: playerMagicRef.current >= move.effects.magicCost ? 5 : 11,
+						...move
+					}
+				}),
+			]
+		},
+		{
+			id: 20,
+			text: "You don't have enough gold for that item.",
+			jumpTo: 19
+		},
+		{
+			id: 21,
+			text: `You purchased `,
+			jumpTo: 19,
+
 		}
 	];
 
@@ -249,7 +303,7 @@ function App() {
 	}
 
 	function enemyAttack() {
-		playerDamage.current = enemyPower.current;
+		playerDamage.current = Math.floor(enemyPower.current / playerDefense.current);
 		playerHealthRef.current -= playerDamage.current;
 		setPlayerHealth(playerHealthRef.current);
 	}
@@ -257,12 +311,28 @@ function App() {
 	function getTurnResult(decision) {
 		const selection = decision.selection;
 		//console.log(`${decision.category} ${selection} + enemy attack`);
+
+		if(playerPowerBoostTurnsLeft.current > 0) {
+			playerPowerBoostTurnsLeft.current -= 1;
+		}
+		else if(playerPowerBoost.current > 1) {
+			playerPower.current = playerPower.current / playerPowerBoost.current;
+			playerPowerBoost.current = 1;
+		}
+
+		if(playerDefenseBoostTurnsLeft.current > 0) {
+			playerDefenseBoostTurnsLeft.current -= 1;
+		}
+		else if(playerDefenseBoost.current > 1) {
+			playerDefense.current = playerDefense.current / playerDefenseBoost.current;
+			playerDefenseBoost.current = 1;
+		}
 		
 		if(decision.category === 'magic') {
 			const chosenMove = playerMagicMoves.find(move => move.id === selection);
 
 			if(playerMagicRef.current >= chosenMove.effects.magicCost) {
-				enemyDamage.current = chosenMove.effects.enemyDamage;
+				enemyDamage.current = chosenMove.effects.enemyDamage * playerPower.current;
 				playerMagicRef.current -= chosenMove.effects.magicCost;
 				enemyAttack();
 			}
@@ -278,14 +348,33 @@ function App() {
 			enemyHealth.current -= enemyDamage.current;
 		}
 		else if(decision.category === 'item') {
+			itemResult.current = '';
+
 			const chosenItem = playerItemsRef.current.find(item => item.id === selection);
 			itemChoice.current = chosenItem.text;
 
 			const playerEffects = chosenItem.playerEffects;
 			playerHealthRef.current += playerEffects.health || 0;
-			console.log('playerEffects.health:', playerEffects.health);
+			//console.log('playerEffects.health:', playerEffects.health);
 			playerMagicRef.current += playerEffects.magic || 0;
-			itemResult.current = `You gained ${playerEffects.health || ''}${playerEffects.health ? ' health' : ''}${playerEffects.health && playerEffects.magic ? ' and ' : ''}${playerEffects.magic || ''} ${playerEffects.magic ? ' magic' : ''} back`;
+
+			if(playerEffects.powerAmount && playerEffects.powerTurns) {
+				playerPowerBoost.current = playerEffects.powerAmount;
+				playerPowerBoostTurnsLeft.current = playerEffects.powerTurns;
+				playerPower.current = playerPower.current * playerEffects.powerAmount;
+				itemResult.current += `You gained ${playerEffects.powerAmount}x attack power for ${playerEffects.powerTurns} turns. `;
+			}
+
+			if(playerEffects.defenseAmount && playerEffects.defenseTurns) {
+				playerDefenseBoost.current = playerEffects.defenseAmount;
+				playerDefenseBoostTurnsLeft.current = playerEffects.defenseTurns;
+				playerDefense.current = playerDefense.current * playerEffects.defenseAmount;
+				itemResult.current += `You gained ${playerEffects.defenseAmount}x defense power for ${playerEffects.defenseTurns} turns. `;
+			}
+
+			if(playerEffects.health && playerEffects.magic) {
+				itemResult.current += `You gained ${playerEffects.health || ''}${playerEffects.health ? ' health' : ''}${playerEffects.health && playerEffects.magic ? ' and ' : ''}${playerEffects.magic || ''} ${playerEffects.magic ? ' magic' : ''} back.`;
+			}
 
 			if(playerHealthRef.current > maxPlayerHealth) {
 				playerHealthRef.current = maxPlayerHealth;
@@ -299,12 +388,12 @@ function App() {
 			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
 			setPlayerItems(playerItemsRef.current);
 
-			enemyAttack(); // Hardcoded for now
+			enemyAttack();
 		}
 		else { // Melee
-			enemyDamage.current = 1;
+			enemyDamage.current = playerPower.current;
 			enemyHealth.current -= enemyDamage.current;
-			enemyAttack(); // Hardcoded for now
+			enemyAttack();
 		}
 		setPlayerMagic(playerMagicRef.current);
 		setPlayerHealth(playerHealthRef.current);
@@ -402,8 +491,12 @@ function App() {
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
-			<button onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 5, money: 5})}>startBattle</button>
-			<button onClick={() => console.log(enemyHealth.current)}>enemyHealth.current</button>
+			<button className='button' onClick={() => startBattle({name: 'Slime', health: 100, attack: 2, experience: 5, money: 5})}>startBattle</button>
+			<button className='button' onClick={() => {
+				console.log('playerDefense.current:', playerDefense.current);
+				console.log('playerDefenseBoost.current:', playerDefenseBoost.current);
+				console.log('playerDefenseBoostTurnsLeft.current:', playerDefenseBoostTurnsLeft.current);
+			}}>playerDefense</button>
 		</div>
 	);
 }
