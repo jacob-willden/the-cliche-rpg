@@ -62,7 +62,12 @@ function App() {
 	const playerDefenseBoostTurnsLeft = useRef(0);
 
 	const [experience, setExperience] = useState(0);
-	const [money, setMoney] = useState(0);
+	const [money, setMoney] = useState(20);
+	const moneyRef = useRef();
+	moneyRef.current = money;
+
+	const enoughMoney = useRef(true);
+
 	const oldDialoguePlace = useRef(0);
 
 	const enemyName = useRef('');
@@ -77,6 +82,30 @@ function App() {
 	const itemResult = useRef('');
 	const gainedExperience = useRef(0);
 	const gainedMoney = useRef(0);
+
+	const lastPurchasedItem = useRef('');
+
+	function purchaseItem(item) {
+		if(item.price <= moneyRef.current) {
+			enoughMoney.current = true;
+			moneyRef.current -= item.price;
+
+			playerItemsRef.current = [
+				...playerItemsRef.current,
+				{
+					id: playerItemsRef.current.length,
+					...item
+				}
+			];
+
+			setMoney(moneyRef.current);
+			setPlayerItems(playerItemsRef.current);
+		}
+		else {
+			enoughMoney.current = false;
+		}
+		console.log('enoughMoney.current:', enoughMoney.current);
+	}
 
 	const [choices, setChoices] = useState([]);
 	const choicesRef = useRef();
@@ -257,38 +286,35 @@ function App() {
 				{
 					number: 1,
 					text: "That's all, thank you.",
-					jumpTo: 14,
+					jumpTo: 21,
 				},
 				{
 					number: 2,
 					text: "Health Potion - 10 Gold",
-					doAction: () => purchaseItem(),
-					jumpTo: 15,
+					doAction: () => purchaseItem({
+						text: 'Health Potion',
+						playerEffects: {
+							health: 10,
+							magic: 5
+						},
+						price: 10
+					}),
+					jumpTo: 20,
 				},
-				...playerMagicMoves.map((move, index) => {
-					return {
-						number: index + 2,
-						doAction: () => getTurnResult({category: 'magic', selection: index}),
-						jumpTo: playerMagicRef.current >= move.effects.magicCost ? 5 : 11,
-						...move
-					}
-				}),
 			]
 		},
 		{
 			id: 20,
-			text: "You don't have enough gold for that item.",
-			jumpTo: 19
+			text: enoughMoney.current ? `You purchased a ${lastPurchasedItem.current}.` : "You don't have enough gold for that item.",
+			jumpTo: 19,
 		},
 		{
 			id: 21,
-			text: `You purchased `,
-			jumpTo: 19,
-
-		}
+			text: 'Have a nice day then!'
+		},
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(12);
+	const [currentDialogueID, setCurrentDialogueID] = useState(18);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -354,9 +380,6 @@ function App() {
 			itemChoice.current = chosenItem.text;
 
 			const playerEffects = chosenItem.playerEffects;
-			playerHealthRef.current += playerEffects.health || 0;
-			//console.log('playerEffects.health:', playerEffects.health);
-			playerMagicRef.current += playerEffects.magic || 0;
 
 			if(playerEffects.powerAmount && playerEffects.powerTurns) {
 				playerPowerBoost.current = playerEffects.powerAmount;
@@ -375,6 +398,9 @@ function App() {
 			if(playerEffects.health && playerEffects.magic) {
 				itemResult.current += `You gained ${playerEffects.health || ''}${playerEffects.health ? ' health' : ''}${playerEffects.health && playerEffects.magic ? ' and ' : ''}${playerEffects.magic || ''} ${playerEffects.magic ? ' magic' : ''} back.`;
 			}
+
+			playerHealthRef.current += playerEffects.health || 0;
+			playerMagicRef.current += playerEffects.magic || 0;
 
 			if(playerHealthRef.current > maxPlayerHealth) {
 				playerHealthRef.current = maxPlayerHealth;
@@ -493,10 +519,8 @@ function App() {
 			</div>
 			<button className='button' onClick={() => startBattle({name: 'Slime', health: 100, attack: 2, experience: 5, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log('playerDefense.current:', playerDefense.current);
-				console.log('playerDefenseBoost.current:', playerDefenseBoost.current);
-				console.log('playerDefenseBoostTurnsLeft.current:', playerDefenseBoostTurnsLeft.current);
-			}}>playerDefense</button>
+				console.log(moneyRef.current);
+			}}>moneyRef.current</button>
 		</div>
 	);
 }
