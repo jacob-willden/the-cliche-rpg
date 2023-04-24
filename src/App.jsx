@@ -62,11 +62,41 @@ function App() {
 	const playerDefenseBoostTurnsLeft = useRef(0);
 
 	const [experience, setExperience] = useState(0);
+	const experienceRef = useRef();
+	experienceRef.current = experience;
 	const [money, setMoney] = useState(20);
 	const moneyRef = useRef();
 	moneyRef.current = money;
 
 	const enoughMoney = useRef(true);
+
+	const currentLevel = useRef(1);
+	const levels = [
+		{
+			number: 2,
+			minimumExp: 10,
+			increasedMaxHealth: 20,
+			increasedMaxMagic: 10
+		},
+		{
+			number: 3,
+			minimumExp: 30,
+			increasedMaxHealth: 15,
+			increasedMaxMagic: 15
+		},
+		{
+			number: 4,
+			minimumExp: 70,
+			increasedMaxHealth: 10,
+			increasedMaxMagic: 20
+		},
+		{
+			number: 5,
+			minimumExp: 150,
+			increasedMaxHealth: 20,
+			increasedMaxMagic: 20
+		}
+	];
 
 	const oldDialoguePlace = useRef(0);
 
@@ -205,6 +235,7 @@ function App() {
 		{
 			id: 9,
 			text: `You won the battle! You got ${gainedExperience.current} experience points and ${gainedMoney.current} gold!`,
+			doAction: () => winBattle(),
 			jumpTo: oldDialoguePlace.current
 		},
 		{
@@ -425,6 +456,23 @@ function App() {
 		setPlayerHealth(playerHealthRef.current);
 	}
 
+	function winBattle() {
+		experienceRef.current = gainedExperience.current;
+		moneyRef.current = gainedMoney.current;
+
+		for(let level of levels) {
+			if(experienceRef.current >= level.minimumExp && currentLevel.current < level.number) {
+				currentLevel.current = level.number;
+				maxPlayerHealthRef.current += level.increasedMaxHealth || 0;
+				maxPlayerMagicRef.current += level.increasedMaxMagic || 0;
+				
+				setMaxPlayerHealth(maxPlayerHealthRef.current);
+				setMaxPlayerMagic(maxPlayerMagicRef.current);
+				break;
+			}
+		}
+	}
+
 	const [showNextButton, setShowNextButton] = useState(true);
 
 	function nextButton() {
@@ -440,6 +488,11 @@ function App() {
 		}
 
 		const nextDialogue = dialogueList[nextDialogueID];
+
+		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
+		if(typeof currentDialogue.doAction === 'function') {
+			currentDialogue.doAction();
+		}
 
 		//console.log('nextDialogue:', nextDialogue);
 
@@ -517,10 +570,10 @@ function App() {
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
-			<button className='button' onClick={() => startBattle({name: 'Slime', health: 100, attack: 2, experience: 5, money: 5})}>startBattle</button>
+			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log(moneyRef.current);
-			}}>moneyRef.current</button>
+				console.log('experienceRef.current:', experienceRef.current, 'currentLevel.current:', currentLevel.current, 'maxPlayerHealthRef.current:', maxPlayerHealthRef.current, 'maxPlayerMagicRef.current:', maxPlayerMagicRef.current);
+			}}>stats</button>
 		</div>
 	);
 }
