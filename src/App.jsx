@@ -71,6 +71,7 @@ function App() {
 	const enoughMoney = useRef(true);
 
 	const currentLevel = useRef(1);
+	const justLeveledUp = useRef(false);
 	const levels = [
 		{
 			number: 2,
@@ -231,11 +232,11 @@ function App() {
 		{
 			id: 8,
 			text: `The ${enemyName.current} fell!`,
+			doAction: () => winBattle(),
 		},
 		{
 			id: 9,
-			text: `You won the battle! You got ${gainedExperience.current} experience points and ${gainedMoney.current} gold!`,
-			doAction: () => winBattle(),
+			text: `You won the battle! You got ${gainedExperience.current} experience points and ${gainedMoney.current} gold! ${justLeveledUp.current ? `You leveled up to level ${currentLevel.current}!` : ''}`,
 			jumpTo: oldDialoguePlace.current
 		},
 		{
@@ -353,6 +354,7 @@ function App() {
 		enemyPower.current = enemy.attack;
 		gainedExperience.current = enemy.experience;
 		gainedMoney.current = enemy.money;
+		justLeveledUp.current = false;
 		
 		oldDialoguePlace.current = currentDialogueID;
 		//console.log(oldDialoguePlace.current);
@@ -459,13 +461,14 @@ function App() {
 	function winBattle() {
 		experienceRef.current = gainedExperience.current;
 		moneyRef.current = gainedMoney.current;
+		justLeveledUp.current = true;
 
 		for(let level of levels) {
 			if(experienceRef.current >= level.minimumExp && currentLevel.current < level.number) {
 				currentLevel.current = level.number;
 				maxPlayerHealthRef.current += level.increasedMaxHealth || 0;
 				maxPlayerMagicRef.current += level.increasedMaxMagic || 0;
-				
+
 				setMaxPlayerHealth(maxPlayerHealthRef.current);
 				setMaxPlayerMagic(maxPlayerMagicRef.current);
 				break;
