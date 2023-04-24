@@ -49,6 +49,11 @@ function App() {
 				defenseAmount: 2,
 				defenseTurns: 3
 			}
+		},
+		{
+			id: 2,
+			text: 'Key',
+			overworldOnly: true,
 		}
 	]);
 	const playerItemsRef = useRef();
@@ -203,7 +208,7 @@ function App() {
 					return {
 						number: index + 2,
 						doAction: () => getTurnResult({category: 'item', selection: index}),
-						jumpTo: 6,
+						jumpTo: item.overworldOnly ? 12 : 6,
 						...item
 					}
 				}),
@@ -264,61 +269,66 @@ function App() {
 		},
 		{
 			id: 12,
-			text: "Hello traveler.",
+			text: "That item can only be used in the overworld.",
+			jumpTo: 3
 		},
 		{
 			id: 13,
+			text: "Hello traveler.",
+		},
+		{
+			id: 14,
 			text: "Do you like apples or oranges?",
 			choices: [
 				{
 					number: 1,
 					text: "I declare that oranges are amazing!",
 					doAction: () => {fruitChoice.current = "oranges"},
-					jumpTo: 14,
+					jumpTo: 15,
 				},
 				{
 					number: 2,
 					text: "APPLES!",
 					doAction: () => {fruitChoice.current = "apples"},
-					jumpTo: 15,
+					jumpTo: 16,
 				},
 				{
 					number: 3,
 					text: "None of the above.",
-					jumpTo: 16
+					jumpTo: 17
 				}
 			]
 		},
 		{
-			id: 14,
-			text: "I'll get you some orange juice then.",
-			jumpTo: 17
-		},
-		{
 			id: 15,
-			text: "I'll get you some apple juice then.",
-			jumpTo: 17
+			text: "I'll get you some orange juice then.",
+			jumpTo: 18
 		},
 		{
 			id: 16,
-			text: "Fair enough."
+			text: "I'll get you some apple juice then.",
+			jumpTo: 18
 		},
 		{
 			id: 17,
-			text: "So what brings you here?"
+			text: "Fair enough."
 		},
 		{
 			id: 18,
-			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
+			text: "So what brings you here?"
 		},
 		{
 			id: 19,
+			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
+		},
+		{
+			id: 20,
 			text: "Would you like to buy something?",
 			choices: [
 				{
 					number: 1,
 					text: "That's all, thank you.",
-					jumpTo: 21,
+					jumpTo: 22,
 				},
 				{
 					number: 2,
@@ -331,22 +341,35 @@ function App() {
 						},
 						price: 10
 					}),
-					jumpTo: 20,
+					jumpTo: 21,
 				},
 			]
 		},
 		{
-			id: 20,
+			id: 21,
 			text: enoughMoney.current ? `You purchased a ${lastPurchasedItem.current}.` : "You don't have enough gold for that item.",
-			jumpTo: 19,
+			jumpTo: 20,
 		},
 		{
-			id: 21,
+			id: 22,
 			text: 'Have a nice day then!'
 		},
+		{
+			id: 23,
+			text: "You found 10 gold in a treasure chest! I'm totally sure that no one will miss it if you take it.",
+			doAction: () => {moneyRef.current += 10; setMoney(moneyRef.current);},
+		},
+		{
+			id: 24,
+			text: "You continue on your journey."
+		},
+		{
+			id: 25,
+			text: "You find a locked door.",
+		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(18);
+	const [currentDialogueID, setCurrentDialogueID] = useState(22);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -367,10 +390,7 @@ function App() {
 		setPlayerHealth(playerHealthRef.current);
 	}
 
-	function getTurnResult(decision) {
-		const selection = decision.selection;
-		//console.log(`${decision.category} ${selection} + enemy attack`);
-
+	function decrementBoostDuration() {
 		if(playerPowerBoostTurnsLeft.current > 0) {
 			playerPowerBoostTurnsLeft.current -= 1;
 		}
@@ -386,6 +406,11 @@ function App() {
 			playerDefense.current = playerDefense.current / playerDefenseBoost.current;
 			playerDefenseBoost.current = 1;
 		}
+	}
+
+	function getTurnResult(decision) {
+		const selection = decision.selection;
+		//console.log(`${decision.category} ${selection} + enemy attack`);
 		
 		if(decision.category === 'magic') {
 			const chosenMove = playerMagicMoves.find(move => move.id === selection);
@@ -393,6 +418,7 @@ function App() {
 			if(playerMagicRef.current >= chosenMove.effects.magicCost) {
 				enemyDamage.current = chosenMove.effects.enemyDamage * playerPower.current;
 				playerMagicRef.current -= chosenMove.effects.magicCost;
+				decrementBoostDuration();
 				enemyAttack();
 			}
 			else {
@@ -411,6 +437,12 @@ function App() {
 
 			const chosenItem = playerItemsRef.current.find(item => item.id === selection);
 			itemChoice.current = chosenItem.text;
+
+			if(chosenItem.overworldOnly) {
+				return;
+			}
+
+			decrementBoostDuration();
 
 			const playerEffects = chosenItem.playerEffects;
 
@@ -452,6 +484,7 @@ function App() {
 		else { // Melee
 			enemyDamage.current = playerPower.current;
 			enemyHealth.current -= enemyDamage.current;
+			decrementBoostDuration();
 			enemyAttack();
 		}
 		setPlayerMagic(playerMagicRef.current);
@@ -532,6 +565,25 @@ function App() {
 	}
 
 	const [modalVisible, setModalVisible] = useState(false);
+	const [modalTypeSelection, setModalTypeSelection] = useState('');
+
+	function ModalContent({modalType}) {
+		if(modalType === 'options') {
+			return (
+				<div className='box'>options</div>
+			);
+		}
+		if(modalType === 'inventory') {
+			return (
+				<div className='box'>inventory (doesn't need to be interactive)</div>
+			);
+		}
+		else {
+			return (
+				<div className='box'></div>
+			);
+		}
+	}
 
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
@@ -539,8 +591,8 @@ function App() {
 	
 	return (
 		<div id='game'>
-			<button id='options-button' className='button'>Options</button>
-			<button id='inventory-button' className='button'>Inventory</button>
+			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
+			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
 				<div id='choices-list'>
 					{choiceButtons}
@@ -567,16 +619,14 @@ function App() {
 			<div className={`modal ${modalVisible ? 'is-active' : ''}`}>
 				<div className='modal-background'></div>
 				<div className='modal-content'>
-					<div className='box'>
-						modalContent
-					</div>
+					<ModalContent modalType={modalTypeSelection} />
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
 			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log('experienceRef.current:', experienceRef.current, 'currentLevel.current:', currentLevel.current, 'maxPlayerHealthRef.current:', maxPlayerHealthRef.current, 'maxPlayerMagicRef.current:', maxPlayerMagicRef.current);
-			}}>stats</button>
+				console.log('moneyRef.current', moneyRef.current);
+			}}>gold</button>
 		</div>
 	);
 }
