@@ -140,7 +140,18 @@ function App() {
 		else {
 			enoughMoney.current = false;
 		}
-		console.log('enoughMoney.current:', enoughMoney.current);
+		//console.log('enoughMoney.current:', enoughMoney.current);
+	}
+
+	const justUsedOverworldItem = useRef(false);
+
+	function requestUseOverworldItem(itemName) {
+		const foundItemIndex = playerItemsRef.current.findIndex(item => item.text === itemName);
+		if(foundItemIndex > -1) {
+			playerItemsRef.current = playerItemsRef.current.slice(foundItemIndex, foundItemIndex + 1);
+			justUsedOverworldItem.current = true;
+			//console.log(justUsedOverworldItem.current);
+		}
 	}
 
 	const [choices, setChoices] = useState([]);
@@ -361,15 +372,30 @@ function App() {
 		},
 		{
 			id: 24,
-			text: "You continue on your journey."
+			text: "You continue on your journey.",
 		},
 		{
 			id: 25,
 			text: "You find a locked door.",
+			doAction: () => requestUseOverworldItem('Key'),
+		},
+		{
+			id: 26,
+			text: justUsedOverworldItem.current ? "You used a key to unlock it." : "You don't have a key, so you decide to continue exploring.",
+			jumpTo: justUsedOverworldItem.current ? 28 : 27
+		},
+		{
+			id: 27,
+			text: "Where could that key be?",
+			jumpTo: 20
+		},
+		{
+			id: 28,
+			text: "You open the door."
 		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(22);
+	const [currentDialogueID, setCurrentDialogueID] = useState(24);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -514,6 +540,13 @@ function App() {
 	function nextButton() {
 		const currentDialogue = dialogueList[currentDialogueID];
 
+		justUsedOverworldItem.current = false;
+
+		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
+		if(typeof currentDialogue.doAction === 'function') {
+			currentDialogue.doAction();
+		}
+
 		let nextDialogueID;
 
 		if(Object.hasOwn(currentDialogue, 'jumpTo')) {
@@ -524,11 +557,6 @@ function App() {
 		}
 
 		const nextDialogue = dialogueList[nextDialogueID];
-
-		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
-		if(typeof currentDialogue.doAction === 'function') {
-			currentDialogue.doAction();
-		}
 
 		//console.log('nextDialogue:', nextDialogue);
 
@@ -625,8 +653,8 @@ function App() {
 			</div>
 			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log('moneyRef.current', moneyRef.current);
-			}}>gold</button>
+				console.log('justUsedOverworldItem.current:', justUsedOverworldItem.current);
+			}}>justUsedOverworldItem.current</button>
 		</div>
 	);
 }
