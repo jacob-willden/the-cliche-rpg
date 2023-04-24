@@ -598,12 +598,43 @@ function App() {
 	function ModalContent({modalType}) {
 		if(modalType === 'options') {
 			return (
-				<div className='box'>options</div>
+				<div className='box'>
+					<label>
+						<p>Sound Effects Volume (Percent)</p>
+						<input type='number' min="0" max="100" defaultValue="100" />
+					</label>
+					<label className='checkbox'>
+						<input type='checkbox' />
+						Mute Sound Effects
+					</label>
+					<label>
+						<p>Music Volume (Percent)</p>
+						<input type='number' min="0" max="100" defaultValue="100" />
+					</label>
+					<label className='checkbox'>
+						<input type='checkbox' />
+						Mute Music
+					</label>
+					<label className='checkbox'>
+						<input type='checkbox' defaultChecked="true" />
+						Prefer Reduced Motion
+					</label>
+					<label className='checkbox'>
+						<input type='checkbox' />
+						Dark Mode
+					</label>
+				</div>
 			);
 		}
 		if(modalType === 'inventory') {
 			return (
-				<div className='box'>inventory (doesn't need to be interactive)</div>
+				<div className='box'>
+					<ul>
+					{playerItems.map(item => (
+						<li key={item.id}>{item.text}</li>
+					))}
+					</ul>
+				</div>
 			);
 		}
 		else {
