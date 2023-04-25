@@ -599,6 +599,10 @@ function App() {
 	const [soundEffectsMute, setSoundEffectsMute] = useState(false);
 	const [musicVolume, setMusicVolume] = useState(100);
 	const [musicMute, setMusicMute] = useState(false);
+
+	const [currentSound, setCurrentSound] = useState('');
+	const [currentMusic, setCurrentMusic] = useState('');
+
 	const [reduceMotion, setReduceMotion] = useState(true);
 	const [darkMode, setDarkMode] = useState(false);
 
@@ -705,12 +709,12 @@ function App() {
 			</div>
 			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log('soundEffectsVolume:', soundEffectsVolume);
-			}}>soundEffectsVolume</button>
-			<audio src='' volume={soundEffectsVolume} muted={soundEffectsMute}>
+				console.log('soundEffectsMute:', soundEffectsMute);
+			}}>soundEffectsMute</button>
+			<audio src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
 				Your browser does not support the audio element.
 			</audio>
-			<audio src='' volume={musicVolume} muted={musicMute}>
+			<audio src={currentMusic} volume={musicMute ? 0 : musicVolume}>
 				Your browser does not support the audio element.
 			</audio>
 		</div>
