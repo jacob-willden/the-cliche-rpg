@@ -9,6 +9,40 @@
 	;
 }
 
+#game.dark {
+	background-color: #000;
+	color: #eee;
+}
+
+.button {
+	border-color: #595959;
+	box-shadow: 0 .5em 1em -.125em rgba(10,10,10,.1),0 0 0 .0625rem rgba(10,10,10,.02);
+}
+
+.button:hover {
+	border-color: #000;
+}
+
+#game.dark .button {
+	border-color: #595959;
+	background-color: #444;
+	color: #eee;
+	box-shadow: 0 .5em 1em -.125em rgba(240,240,240,.1),0 0 0 .0625rem rgba(240,240,240,.02);
+}
+
+input[type="number"] {
+	padding-right: 0;
+}
+
+.checkbox {
+	display: block;
+	margin: 1rem 0;
+}
+
+.checkbox input {
+	margin-right: 0.25rem;
+}
+
 #options-button {
 	width: 8rem;
 	grid-area: top-left;
@@ -23,7 +57,7 @@
 #choices-view {
 	grid-area: center-left;
 	padding: 1rem 1rem 0 0;
-	min-height: 11.5rem;
+	min-height: 14rem;
 }
 
 #choices-list {
@@ -55,6 +89,12 @@
 	grid-area: bottom-full;
 }
 
+#game.dark #primary-textbox {
+	background-color: #111;
+	color: #eee;
+	border: 0.0625rem solid #595959;
+}
+
 #primary-textbox p {
 	width: 100%;
 }
@@ -66,4 +106,25 @@
 
 .hidden-next-button {
 	display: none;
+}
+
+.modal-content {
+	max-width: calc(100% - 1rem);
+}
+
+#game.dark .modal-content .box {
+	background-color: #111;
+	color: #eee;
+}
+
+@media (max-width: 22rem) {
+	#game {
+		padding: 1rem;
+	}
+	#choices-view {
+		padding: 1rem 0.5rem 0 0;
+	}
+	#reserves {
+		padding: 1rem 0 0 0.5rem;
+	}
 }

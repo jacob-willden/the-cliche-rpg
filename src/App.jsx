@@ -1,4 +1,4 @@
-import {useState, useRef} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import './bulma.min.css';
 import './App.css';
 
@@ -595,32 +595,53 @@ function App() {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalTypeSelection, setModalTypeSelection] = useState('');
 
+	const [soundEffectsVolume, setSoundEffectsVolume] = useState(100);
+	const [soundEffectsMute, setSoundEffectsMute] = useState(false);
+	const [musicVolume, setMusicVolume] = useState(100);
+	const [musicMute, setMusicMute] = useState(false);
+	const [reduceMotion, setReduceMotion] = useState(true);
+	const [darkMode, setDarkMode] = useState(false);
+
+	function checkForReducedMotion() {
+		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true) {
+			setReduceMotion(false);
+		}
+		else {
+			setReduceMotion(true);
+		}
+	}
+
+	useEffect(() => {
+		// Event listener modified from example here: https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
+		window.matchMedia('(prefers-reduced-motion: no-preference)').addEventListener('change', checkForReducedMotion);
+	}, []);
+
 	function ModalContent({modalType}) {
 		if(modalType === 'options') {
 			return (
 				<div className='box'>
 					<label>
 						<p>Sound Effects Volume (Percent)</p>
-						<input type='number' min="0" max="100" defaultValue="100" />
+						<input value={soundEffectsVolume} onChange={(event) => setSoundEffectsVolume(event.target.value)} type='number' min="0" max="100" />
 					</label>
 					<label className='checkbox'>
-						<input type='checkbox' />
+						<input checked={soundEffectsMute} onChange={(event) => setSoundEffectsMute(event.target.checked)} type='checkbox' />
 						Mute Sound Effects
 					</label>
 					<label>
 						<p>Music Volume (Percent)</p>
-						<input type='number' min="0" max="100" defaultValue="100" />
+						<input value={musicVolume} onChange={(event) => setMusicVolume(event.target.value)} type='number' min="0" max="100" />
 					</label>
 					<label className='checkbox'>
-						<input type='checkbox' />
+						<input checked={musicMute} onChange={(event) => setMusicMute(event.target.checked)} type='checkbox' />
 						Mute Music
 					</label>
 					<label className='checkbox'>
-						<input type='checkbox' defaultChecked="true" />
+						<input checked={reduceMotion} onChange={(event) => setReduceMotion(event.target.checked)} type='checkbox' />
 						Prefer Reduced Motion
 					</label>
 					<label className='checkbox'>
-						<input type='checkbox' />
+						<input checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
 						Dark Mode
 					</label>
 				</div>
@@ -649,7 +670,7 @@ function App() {
 	));
 	
 	return (
-		<div id='game'>
+		<div id='game' className={darkMode ? 'dark' : ''}>
 			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
@@ -684,8 +705,14 @@ function App() {
 			</div>
 			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
-				console.log('justUsedOverworldItem.current:', justUsedOverworldItem.current);
-			}}>justUsedOverworldItem.current</button>
+				console.log('soundEffectsVolume:', soundEffectsVolume);
+			}}>soundEffectsVolume</button>
+			<audio src='' volume={soundEffectsVolume} muted={soundEffectsMute}>
+				Your browser does not support the audio element.
+			</audio>
+			<audio src='' volume={musicVolume} muted={musicMute}>
+				Your browser does not support the audio element.
+			</audio>
 		</div>
 	);
 }
