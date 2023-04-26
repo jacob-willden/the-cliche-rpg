@@ -712,6 +712,7 @@ function App() {
 	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/alienYellow.png');
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
 	const [currentAnimation, setCurrentAnimation] = useState('src/assets/images/animations/explosion_1.png');
+	const [animationVisible, setAnimationVisible] = useState(false);
 	const [background, setBackground] = useState('');
 
 	function playAnimation(animationPath, soundPath, duration) {
@@ -719,12 +720,13 @@ function App() {
 
 		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true && !reduceMotion) {
 			setCurrentAnimation(animationPath);
+			setAnimationVisible(true);
 			setTimeout(() => {
-				setCurrentAnimation('');
+				setAnimationVisible(false);
 			}, duration * 1000);
 		}
 		else {
-			setCurrentAnimation('');
+			setAnimationVisible(false);
 		}
 	}
 
@@ -734,6 +736,7 @@ function App() {
 	
 	return (
 		<div id='game' className={darkMode ? 'dark' : ''} style={{background: `url("${background}")`}}>
+			<button onClick={() => playAnimation(currentAnimation, 'src/assets/sounds/effects/test.ogg', 2)}>playAnimation</button>
 			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
@@ -742,18 +745,20 @@ function App() {
 				</div>
 			</div>
 			<div id='reserves'>
-				<output>
-					Health: <span id='health'>{playerHealth}</span> / <span id='max-health'>{maxPlayerHealth}</span>
-				</output>
-				<output>
-					Magic: <span id='magic'>{playerMagic}</span> / <span id='max-magic'>{maxPlayerMagic}</span>
-				</output>
-				<output>
-					Experience: <span id='experience'>{experience}</span>
-				</output>
-				<output>
-					Gold: <span id='money'>{money}</span>
-				</output>
+				<div className='card'>
+					<output>
+						Health: <span id='health'>{playerHealth}</span> / <span id='max-health'>{maxPlayerHealth}</span>
+					</output>
+					<output>
+						Magic: <span id='magic'>{playerMagic}</span> / <span id='max-magic'>{maxPlayerMagic}</span>
+					</output>
+					<output>
+						Experience: <span id='experience'>{experience}</span>
+					</output>
+					<output>
+						Gold: <span id='money'>{money}</span>
+					</output>
+				</div>
 			</div>
 			<div id='primary-textbox' className='card'>
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>
@@ -771,7 +776,7 @@ function App() {
 				console.log('soundEffectsMute:', soundEffectsMute);
 			}}>soundEffectsMute</button> */}
 			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
-			<img src={currentAnimation} alt='' id='sprite-animation' />
+			<img src={currentAnimation} alt='' id='sprite-animation' style={{opacity: animationVisible ? 1 : 0}} />
 			<audio ref={soundElementRef} src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
 				Your browser does not support the audio element.
 			</audio>

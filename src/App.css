@@ -79,6 +79,14 @@ input[type="number"] {
 #reserves {
 	grid-area: reserves;
 	padding: 1rem 0 0 1rem;
+	display: flex;
+	justify-content: flex-end;
+}
+
+#reserves .card {
+	width: fit-content;
+	height: fit-content;
+	padding: 1rem;
 }
 
 #reserves output {
@@ -100,6 +108,13 @@ input[type="number"] {
 @media (prefers-reduced-motion: no-preference) {
 	#sprite-animation {
 		display: block;
+		opacity: 0;
+		transition-property: opacity;
+		transition-timing-function: ease-in-out;
+		transition-duration: 0.5s;
+	}
+	#sprite-animation.visible {
+		opacity: 1;
 	}
 }
 
@@ -118,7 +133,7 @@ input[type="number"] {
 	z-index: 1;
 }
 
-#game.dark #primary-textbox {
+#game.dark .card {
 	background-color: #111;
 	color: #eee;
 	border: 0.0625rem solid #eee;
