@@ -604,6 +604,29 @@ function App() {
 	const [currentSound, setCurrentSound] = useState('');
 	const [currentMusic, setCurrentMusic] = useState('');
 
+	const soundElementRef = useRef(null);
+	const musicElementRef = useRef(null);
+
+	async function playSound(soundPath) {
+		setCurrentSound(soundPath);
+		try {
+			await soundElementRef.current.play();
+		}
+		catch(error) {
+			console.error(error);
+		}
+	}
+
+	async function playMusic(musicPath) {
+		setCurrentMusic(musicPath);
+		try {
+			await musicElementRef.current.play();
+		}
+		catch(error) {
+			console.error(error);
+		}
+	}
+
 	const [reduceMotion, setReduceMotion] = useState(true);
 	const [darkMode, setDarkMode] = useState(true);
 
@@ -681,10 +704,18 @@ function App() {
 		}
 	}
 
-	const [currentSprite, setCurrentSprite] = useState('src/assets/images/alienYellow.png');
+	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/alienYellow.png');
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
-	const [currentAnimation, setCurrentAnimation] = useState('src/assets/images/splat00.png');
-	const [background, setBackground] = useState('src/assets/images/splat21.png');
+	const [currentAnimation, setCurrentAnimation] = useState('src/assets/images/animations/explosion_1.png');
+	const [background, setBackground] = useState('');
+
+	function playAnimation(animationPath, soundPath, duration) {
+		setCurrentAnimation(animationPath);
+		playSound(soundPath);
+		setTimeout(() => {
+			setCurrentAnimation('');
+		}, duration * 1000);
+	}
 
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
@@ -730,10 +761,10 @@ function App() {
 			}}>soundEffectsMute</button> */}
 			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
 			<img src={currentAnimation} alt='' id='sprite-animation' />
-			<audio src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
+			<audio ref={soundElementRef} src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
 				Your browser does not support the audio element.
 			</audio>
-			<audio src={currentMusic} volume={musicMute ? 0 : musicVolume}>
+			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
 		</div>
