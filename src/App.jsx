@@ -48,7 +48,8 @@ function App() {
 				powerTurns: 3,
 				defenseAmount: 2,
 				defenseTurns: 3
-			}
+			},
+			price: 15
 		},
 		{
 			id: 2,
@@ -604,7 +605,7 @@ function App() {
 	const [currentMusic, setCurrentMusic] = useState('');
 
 	const [reduceMotion, setReduceMotion] = useState(true);
-	const [darkMode, setDarkMode] = useState(false);
+	const [darkMode, setDarkMode] = useState(true);
 
 	function checkForReducedMotion() {
 		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true) {
@@ -656,7 +657,18 @@ function App() {
 				<div className='box'>
 					<ul>
 					{playerItems.map(item => (
-						<li key={item.id}>{item.text}</li>
+						<li key={item.id}>
+							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''}
+							<ul>
+								{item.playerEffects?.health ? (<li>+ {item.playerEffects.health} Health</li>) : ''}
+
+								{item.playerEffects?.magic ? (<li>+ {item.playerEffects.magic} Magic</li>) : ''}
+
+								{item.playerEffects?.powerAmount && item.playerEffects?.powerTurns ? (<li>{item.playerEffects.powerAmount}x Power Boost for {item.playerEffects.powerTurns} Turns</li>) : ''}
+								
+								{item.playerEffects?.defenseAmount && item.playerEffects?.defenseTurns ? (<li>{item.playerEffects.defenseAmount}x Defense Boost for {item.playerEffects.defenseTurns} Turns</li>) : ''}
+							</ul>
+						</li>
 					))}
 					</ul>
 				</div>
@@ -669,12 +681,17 @@ function App() {
 		}
 	}
 
+	const [currentSprite, setCurrentSprite] = useState('src/assets/images/alienYellow.png');
+	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
+	const [currentAnimation, setCurrentAnimation] = useState('src/assets/images/splat00.png');
+	const [background, setBackground] = useState('src/assets/images/splat21.png');
+
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
 	));
 	
 	return (
-		<div id='game' className={darkMode ? 'dark' : ''}>
+		<div id='game' className={darkMode ? 'dark' : ''} style={{background: `url("${background}")`}}>
 			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
@@ -707,10 +724,12 @@ function App() {
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
-			<button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
+			{/* <button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
 			<button className='button' onClick={() => {
 				console.log('soundEffectsMute:', soundEffectsMute);
-			}}>soundEffectsMute</button>
+			}}>soundEffectsMute</button> */}
+			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
+			<img src={currentAnimation} alt='' id='sprite-animation' />
 			<audio src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
 				Your browser does not support the audio element.
 			</audio>

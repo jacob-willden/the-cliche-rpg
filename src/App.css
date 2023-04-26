@@ -1,12 +1,14 @@
 #game {
 	margin: 0 auto;
 	padding: 2rem;
+	height: 100vh;
 	display: grid;
 	grid-template-areas: 
-		"top-left top-right"
-		"center-left center-right"
-		"bottom-full bottom-full"
+		"options inventory"
+		"choices reserves"
+		"primary-textbox primary-textbox"
 	;
+	grid-template-rows: 2.5rem auto 12rem;
 }
 
 #game.dark {
@@ -49,19 +51,19 @@ input[type="number"] {
 
 #options-button {
 	width: 6.5rem;
-	grid-area: top-left;
+	grid-area: options;
 }
 
 #inventory-button {
 	width: 6.5rem;
-	grid-area: top-right;
+	grid-area: inventory;
 	justify-self: end;
 }
 
 #choices-view {
-	grid-area: center-left;
+	grid-area: choices;
 	padding: 1rem 1rem 0 0;
-	min-height: 14rem;
+	min-height: 15rem;
 }
 
 #choices-list {
@@ -75,7 +77,7 @@ input[type="number"] {
 }
 
 #reserves {
-	grid-area: center-right;
+	grid-area: reserves;
 	padding: 1rem 0 0 1rem;
 }
 
@@ -84,13 +86,36 @@ input[type="number"] {
 	text-align: right;
 }
 
+#sprite, #sprite-animation {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#sprite-animation {
+	display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	#sprite-animation {
+		display: block;
+	}
+}
+
+#game.dark #sprite-animation {
+	filter: brightness(0.5);
+}
+
 #primary-textbox {
 	padding: 1rem;
 	min-height: 7rem;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	align-items: flex-end;
-	grid-area: bottom-full;
+	grid-area: primary-textbox;
+	z-index: 1;
 }
 
 #game.dark #primary-textbox {
@@ -119,6 +144,15 @@ input[type="number"] {
 #game.dark .modal-content .box {
 	background-color: #111;
 	color: #eee;
+}
+
+.modal-content li {
+	font-weight: bold;
+}
+
+.modal-content li ul li {
+	margin-left: 1.5rem;
+	font-weight: normal;
 }
 
 @media (max-width: 24rem) {
