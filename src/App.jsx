@@ -38,7 +38,8 @@ function App() {
 				health: 10,
 				magic: 5
 			},
-			price: 10
+			price: 10,
+			icon: 'src/assets/images/icons/health_potion.png',
 		},
 		{
 			id: 1,
@@ -49,12 +50,14 @@ function App() {
 				defenseAmount: 2,
 				defenseTurns: 3
 			},
-			price: 15
+			price: 15,
+			icon: 'src/assets/images/icons/tonic.png',
 		},
 		{
 			id: 2,
 			text: 'Key',
 			overworldOnly: true,
+			icon: 'src/assets/images/icons/key.png',
 		}
 	]);
 	const playerItemsRef = useRef();
@@ -351,7 +354,8 @@ function App() {
 							health: 10,
 							magic: 5
 						},
-						price: 10
+						price: 10,
+						icon: 'src/assets/images/icons/health_potion.png'
 					}),
 					jumpTo: 21,
 				},
@@ -642,6 +646,7 @@ function App() {
 	useEffect(() => {
 		// Event listener modified from example here: https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
 		window.matchMedia('(prefers-reduced-motion: no-preference)').addEventListener('change', checkForReducedMotion);
+		checkForReducedMotion();
 	}, []);
 
 	function ModalContent({modalType}) {
@@ -681,7 +686,7 @@ function App() {
 					<ul>
 					{playerItems.map(item => (
 						<li key={item.id}>
-							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''}
+							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''} <img src={item.icon} alt='' className='item-icon' />
 							<ul>
 								{item.playerEffects?.health ? (<li>+ {item.playerEffects.health} Health</li>) : ''}
 
@@ -710,11 +715,17 @@ function App() {
 	const [background, setBackground] = useState('');
 
 	function playAnimation(animationPath, soundPath, duration) {
-		setCurrentAnimation(animationPath);
 		playSound(soundPath);
-		setTimeout(() => {
+
+		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true && !reduceMotion) {
+			setCurrentAnimation(animationPath);
+			setTimeout(() => {
+				setCurrentAnimation('');
+			}, duration * 1000);
+		}
+		else {
 			setCurrentAnimation('');
-		}, duration * 1000);
+		}
 	}
 
 	const choiceButtons = choices.map(choice => (
