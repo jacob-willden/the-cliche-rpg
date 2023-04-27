@@ -12,6 +12,10 @@
 	overflow: hidden;
 }
 
+.z-index {
+	z-index: 5;
+}
+
 #game.dark {
 	background-color: #000;
 	color: #eee;
@@ -22,7 +26,8 @@
 	left: 0;
 	top: 0;
 	min-width: 100%;
-	min-height: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 #game.dark #background {

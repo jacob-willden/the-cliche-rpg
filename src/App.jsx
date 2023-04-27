@@ -47,22 +47,11 @@ function App() {
 			icon: 'src/assets/images/icons/health_potion.png',
 			sound: 'src/assets/sounds/effects/test.ogg'
 		},
-		{
-			id: 1,
-			text: 'Tonic Booster',
-			playerEffects: {
-				powerAmount: 2,
-				powerTurns: 3,
-				defenseAmount: 2,
-				defenseTurns: 3
-			},
-			price: 15,
-			icon: 'src/assets/images/icons/tonic.png',
-			sound: 'src/assets/sounds/effects/test.ogg'
-		},
 	]);
 	const playerItemsRef = useRef();
 	playerItemsRef.current = playerItems;
+
+	const usedItemsInBattle = useRef([]);
 
 	const playerPower = useRef(1);
 	const playerDefense = useRef(1);
@@ -267,13 +256,13 @@ function App() {
 			choices: [
 				{
 					number: 1,
-					text: "Yes.",
-					doAction: () => console.log("reset variables"),
+					text: "Yes, restart the battle.",
+					doAction: () => resetBattle(),
 					jumpTo: 0
 				},
 				{
 					number: 2,
-					text: "No.",
+					text: "No, restart the game.",
 					doAction: () => console.log("end game"),
 					jumpTo: 12
 				},
@@ -339,12 +328,29 @@ function App() {
 							magic: 5
 						},
 						price: 10,
-						icon: 'src/assets/images/icons/health_potion.png'
+						icon: 'src/assets/images/icons/health_potion.png',
+						sound: 'src/assets/sounds/effects/test.ogg'
 					}),
 					jumpTo: 21,
 				},
 				{
 					number: 3,
+					text: 'Tonic Booster - 15 Gold',
+					doAction: () => purchaseItem({
+						text: 'Tonic Booster',
+						playerEffects: {
+							powerAmount: 2,
+							powerTurns: 3,
+							defenseAmount: 2,
+							defenseTurns: 3
+						},
+						price: 15,
+						icon: 'src/assets/images/icons/tonic.png',
+						sound: 'src/assets/sounds/effects/test.ogg'
+					}),
+				},
+				{
+					number: 4,
 					text: "Key - 20 Gold",
 					doAction: () => purchaseItem({
 						text: 'Key',
@@ -368,7 +374,8 @@ function App() {
 		},
 		{
 			id: 19,
-			text: "You leave the village and journey into the wilderness."
+			text: "You leave the village and journey into the wilderness.",
+			doAction: () => setBackground('src/assets/images/backgrounds/grassland_background.jpg')
 		},
 		{
 			id: 20,
@@ -398,11 +405,13 @@ function App() {
 		{
 			id: 25,
 			text: "Where could that key be? Oh wait! That merchant was selling keys. You decide to go back.",
+			doAction: () => setBackground('src/assets/images/backgrounds/village_background.jpg'),
 			jumpTo: 20
 		},
 		{
 			id: 26,
-			text: "You open the door. Inside, you find a passage that splits into two directions."
+			text: "You open the door. Inside, you find a cave, which seems an odd place for a door. Nevertheless, there is a passage ahead that splits into two directions.",
+			doAction: () => setBackground('src/assets/images/backgrounds/cave_background.jpg')
 		},
 		{
 			id: 27,
@@ -564,6 +573,10 @@ function App() {
 
 			//console.log('playerHealthRef.current:', playerHealthRef.current);
 
+			usedItemsInBattle.current = [
+				...usedItemsInBattle.current,
+				chosenItem
+			];
 			playerItemsRef.current = playerItemsRef.current.filter(item => item.id !== selection); // Remove item from inventory
 			setPlayerItems(playerItemsRef.current);
 
@@ -588,6 +601,8 @@ function App() {
 		experienceRef.current = gainedExperience.current;
 		moneyRef.current = gainedMoney.current;
 		justLeveledUp.current = true;
+		setCurrentSprite('');
+		setCurrentSpriteAlt('');
 
 		for(let level of levels) {
 			if(experienceRef.current >= level.minimumExp && currentLevel.current < level.number) {
@@ -600,6 +615,24 @@ function App() {
 				break;
 			}
 		}
+	}
+
+	function resetBattle() {
+		playerHealthRef.current = maxPlayerHealthRef.current;
+		playerMagicRef.current = maxPlayerMagicRef.current;
+		setPlayerHealth(playerHealthRef.current);
+		setPlayerMagic(playerMagicRef.current);
+
+		playerPowerBoost.current = 1;
+		playerPowerBoostTurnsLeft.current = 0;
+		playerDefenseBoost.current = 1;
+		playerDefenseBoostTurnsLeft.current = 0;
+
+		playerItemsRef.current = [
+			...playerItemsRef.current,
+			...usedItemsInBattle.current
+		];
+		usedItemsInBattle.current = [];
 	}
 
 	const [showNextButton, setShowNextButton] = useState(true);
@@ -693,14 +726,17 @@ function App() {
 		}
 	}
 
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
+	const prefersReducedMotionRef = useRef(true);
 	const [reduceMotion, setReduceMotion] = useState(true);
-	const [darkMode, setDarkMode] = useState(true);
+	const [darkMode, setDarkMode] = useState(false);
 
 	function checkForReducedMotion() {
-		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true) {
+		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true && !prefersReducedMotionRef.current) {
 			setReduceMotion(false);
 		}
 		else {
+			console.log('prefersReducedMotionRef:', prefersReducedMotionRef.current)
 			setReduceMotion(true);
 		}
 	}
@@ -732,7 +768,11 @@ function App() {
 						Mute Music
 					</label>
 					<label className='checkbox'>
-						<input checked={reduceMotion} onChange={(event) => setReduceMotion(event.target.checked)} type='checkbox' />
+						<input checked={prefersReducedMotion} onChange={(event) => {
+							prefersReducedMotionRef.current = event.target.checked;
+							setPrefersReducedMotion(prefersReducedMotionRef.current);
+							checkForReducedMotion();
+						}} type='checkbox' />
 						Prefer Reduced Motion
 					</label>
 					<label className='checkbox'>
@@ -776,7 +816,7 @@ function App() {
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
 	const [currentAnimation, setCurrentAnimation] = useState('');
 	const [animationVisible, setAnimationVisible] = useState(false);
-	const [background, setBackground] = useState('src/assets/images/backgrounds/grassland_background.jpg');
+	const [background, setBackground] = useState('src/assets/images/backgrounds/village_background.jpg');
 
 	function playAnimation(animationPath, soundPath, duration) {
 		playSound(soundPath);
@@ -842,6 +882,7 @@ function App() {
 			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
+			<button onClick={() => playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2)} className='z-index'>playAnimation</button>
 		</div>
 	);
 }
