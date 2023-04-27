@@ -37,8 +37,8 @@ function App() {
 
 	const [playerItems, setPlayerItems] = useState([
 		{
-			id: 0,
-			text: 'Health Potion',
+			id: Symbol(),
+			text: 'Potion',
 			playerEffects: {
 				health: 10,
 				magic: 5
@@ -63,7 +63,7 @@ function App() {
 	const [experience, setExperience] = useState(0);
 	const experienceRef = useRef();
 	experienceRef.current = experience;
-	const [money, setMoney] = useState(20);
+	const [money, setMoney] = useState(100);
 	const moneyRef = useRef();
 	moneyRef.current = money;
 
@@ -114,27 +114,35 @@ function App() {
 	const gainedMoney = useRef(0);
 
 	const lastPurchasedItem = useRef('');
+	const tooManyItems = useRef(false);
 
 	function purchaseItem(item) {
-		if(item.price <= moneyRef.current) {
-			enoughMoney.current = true;
-			moneyRef.current -= item.price;
-
-			playerItemsRef.current = [
-				...playerItemsRef.current,
-				{
-					id: playerItemsRef.current.length,
-					...item
-				}
-			];
-
-			setMoney(moneyRef.current);
-			setPlayerItems(playerItemsRef.current);
+		if(playerItemsRef.current.length < 5) {
+			if(item.price <= moneyRef.current) {
+				lastPurchasedItem.current = item.text;
+				enoughMoney.current = true;
+				moneyRef.current -= item.price;
+	
+				playerItemsRef.current = [
+					...playerItemsRef.current,
+					{
+						id: Symbol(),
+						...item
+					}
+				];
+	
+				setMoney(moneyRef.current);
+				setPlayerItems(playerItemsRef.current);
+			}
+			else {
+				enoughMoney.current = false;
+			}
+			tooManyItems.current = false;
+			//console.log('enoughMoney.current:', enoughMoney.current);
 		}
 		else {
-			enoughMoney.current = false;
+			tooManyItems.current = true;
 		}
-		//console.log('enoughMoney.current:', enoughMoney.current);
 	}
 
 	const justUsedOverworldItem = useRef(false);
@@ -194,7 +202,7 @@ function App() {
 				...playerMagicMoves.map((move, index) => {
 					return {
 						number: index + 2,
-						doAction: () => getTurnResult({category: 'magic', selection: index}),
+						doAction: () => getTurnResult({category: 'magic', selection: move.id}),
 						jumpTo: playerMagicRef.current >= move.effects.magicCost ? 5 : 11,
 						...move
 					}
@@ -213,7 +221,7 @@ function App() {
 				...playerItems.map((item, index) => {
 					return {
 						number: index + 2,
-						doAction: () => getTurnResult({category: 'item', selection: index}),
+						doAction: () => getTurnResult({category: 'item', selection: item.id}),
 						jumpTo: item.overworldOnly ? 12 : 6,
 						...item
 					}
@@ -320,9 +328,9 @@ function App() {
 				},
 				{
 					number: 2,
-					text: "Health Potion - 10 Gold",
+					text: "Potion - 10 Gold",
 					doAction: () => purchaseItem({
-						text: 'Health Potion',
+						text: 'Potion',
 						playerEffects: {
 							health: 10,
 							magic: 5
@@ -331,7 +339,7 @@ function App() {
 						icon: 'src/assets/images/icons/health_potion.png',
 						sound: 'src/assets/sounds/effects/test.ogg'
 					}),
-					jumpTo: 21,
+					jumpTo: 17,
 				},
 				{
 					number: 3,
@@ -348,6 +356,7 @@ function App() {
 						icon: 'src/assets/images/icons/tonic.png',
 						sound: 'src/assets/sounds/effects/test.ogg'
 					}),
+					jumpTo: 17,
 				},
 				{
 					number: 4,
@@ -358,19 +367,19 @@ function App() {
 						price: 20,
 						icon: 'src/assets/images/icons/key.png'
 					}),
-					jumpTo: 21,
+					jumpTo: 17,
 				}
 			]
 		},
 		{
 			id: 17,
-			text: enoughMoney.current ? `You purchased a ${lastPurchasedItem.current}.` : "You don't have enough gold for that item.",
+			text: tooManyItems.current ? "You can only carry up to five items at a time." : enoughMoney.current ? `You purchased a ${lastPurchasedItem.current}.` : "You don't have enough gold for that item.",
 			jumpTo: 16,
 		},
 		{
 			id: 18,
-			text: '"Have a nice day then! Be sure to look out for monsters. They\'re not the nice kind that teach you the alphabet or numbers."',
-			jumpTo: alreadyFoughtSlime.current ? 21 : 19
+			text: alreadyFoughtSlime.current ? "Have a good day then! Those monsters are tough, aren't they?" : '"Have a nice day then! Be sure to look out for monsters. They\'re not the nice kind that teach you the alphabet or numbers."',
+			jumpTo: alreadyFoughtSlime.current ? 22 : 19
 		},
 		{
 			id: 19,
@@ -379,18 +388,28 @@ function App() {
 		},
 		{
 			id: 20,
-			text: "You find 10 gold in a treasure chest! I'm totally sure that no one will miss it if you take it.",
-			doAction: () => {moneyRef.current += 10; setMoney(moneyRef.current);},
+			text: alreadyFoughtSlime.current ? "You pass the treasure chest that you ransacked, I mean discovered." : "You find 10 gold in a treasure chest! I'm totally sure that no one will miss it if you take it.",
+			doAction: () => {
+				if(!alreadyFoughtSlime.current)
+				{
+					moneyRef.current += 10;
+					setMoney(moneyRef.current);
+				}
+			},
 		},
 		{
 			id: 21,
 			text: "You continue on your journey. Suddenly, a monster emerges from the bushes!",
-			doAction: () => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5, sprite: 'src/assets/images/sprites/slime.png', spriteAlt: 'Ghost enemy'})
+			doAction: () => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5, sprite: 'src/assets/images/sprites/slime.png', spriteAlt: 'Ghost enemy'}),
+			battle: true
 		},
 		{
 			id: 22,
 			text: "You continue on your journey.",
-			doAction: () => alreadyFoughtSlime.current = true
+			doAction: () => {
+				alreadyFoughtSlime.current = true;
+				if(background !== 'src/assets/images/backgrounds/grassland_background.jpg') setBackground('src/assets/images/backgrounds/grassland_background.jpg');
+			}
 		},
 		{
 			id: 23,
@@ -406,12 +425,16 @@ function App() {
 			id: 25,
 			text: "Where could that key be? Oh wait! That merchant was selling keys. You decide to go back.",
 			doAction: () => setBackground('src/assets/images/backgrounds/village_background.jpg'),
-			jumpTo: 20
+			jumpTo: 16
 		},
 		{
 			id: 26,
 			text: "You open the door. Inside, you find a cave, which seems an odd place for a door. Nevertheless, there is a passage ahead that splits into two directions.",
-			doAction: () => setBackground('src/assets/images/backgrounds/cave_background.jpg')
+			doAction: () => {
+				playerItemsRef.current.splice(playerItemsRef.current.findIndex(item => item.text === 'Key'), 1);
+				setPlayerItems(playerItemsRef.current);
+				setBackground('src/assets/images/backgrounds/cave_background.jpg');
+			}
 		},
 		{
 			id: 27,
@@ -442,7 +465,8 @@ function App() {
 		{
 			id: 30,
 			text: 'From around a corner, a monster springs on you!',
-			doAction: () => startBattle({name: 'Ghost', health: 20, attack: 2, experience: 30, money: 25, sprite: 'src/assets/images/sprites/ghost.png', spriteAlt: 'Ghost enemy'})
+			doAction: () => startBattle({name: 'Ghost', health: 20, attack: 2, experience: 30, money: 25, sprite: 'src/assets/images/sprites/ghost.png', spriteAlt: 'Ghost enemy'}),
+			battle: true
 		},
 		{
 			id: 31,
@@ -459,7 +483,7 @@ function App() {
 		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(31);
+	const [currentDialogueID, setCurrentDialogueID] = useState(15);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -472,7 +496,7 @@ function App() {
 		setCurrentSprite(enemy.sprite);
 		setCurrentSpriteAlt(enemy.spriteAlt);
 		
-		oldDialoguePlace.current = currentDialogueID;
+		oldDialoguePlace.current = currentDialogueID + 1;
 		//console.log(oldDialoguePlace.current);
 		setCurrentDialogueID(0);
 	}
@@ -647,6 +671,10 @@ function App() {
 			currentDialogue.doAction();
 		}
 
+		if(currentDialogue.battle) {
+			return;
+		}
+
 		let nextDialogueID;
 
 		if(Object.hasOwn(currentDialogue, 'jumpTo')) {
@@ -729,7 +757,7 @@ function App() {
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
 	const prefersReducedMotionRef = useRef(true);
 	const [reduceMotion, setReduceMotion] = useState(true);
-	const [darkMode, setDarkMode] = useState(false);
+	const [darkMode, setDarkMode] = useState(true);
 
 	function checkForReducedMotion() {
 		if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches === true && !prefersReducedMotionRef.current) {
@@ -787,8 +815,8 @@ function App() {
 			return (
 				<div className='box'>
 					<ul>
-					{playerItems.map(item => (
-						<li key={item.id}>
+					{playerItems.map((item, index) => (
+						<li key={index}>
 							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''} <img src={item.icon} alt='' className='item-icon' />
 							<ul>
 								{item.playerEffects?.health ? (<li>+ {item.playerEffects.health} Health</li>) : ''}
@@ -834,7 +862,7 @@ function App() {
 	}
 
 	const choiceButtons = choices.map(choice => (
-		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.text} className='button choice'>{choice.text}</button>
+		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.number} className='button choice'>{choice.text}</button>
 	));
 	
 	return (
@@ -882,7 +910,7 @@ function App() {
 			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
-			<button onClick={() => playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2)} className='z-index'>playAnimation</button>
+			<button onClick={console.log(playerItems)}>playerItems</button>
 		</div>
 	);
 }
