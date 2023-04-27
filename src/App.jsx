@@ -60,12 +60,6 @@ function App() {
 			icon: 'src/assets/images/icons/tonic.png',
 			sound: 'src/assets/sounds/effects/test.ogg'
 		},
-		{
-			id: 2,
-			text: 'Key',
-			overworldOnly: true,
-			icon: 'src/assets/images/icons/key.png',
-		}
 	]);
 	const playerItemsRef = useRef();
 	playerItemsRef.current = playerItems;
@@ -170,6 +164,7 @@ function App() {
 	choicesRef.current = choices;
 	
 	const fruitChoice = useRef('non-existent fruits');
+	const alreadyFoughtSlime = useRef(false);
 
 	const dialogueList = [
 	    {
@@ -296,11 +291,11 @@ function App() {
 		},
 		{
 			id: 13,
-			text: "Hello traveler.",
+			text: 'As you begin your journey, you find a merchant. "Hello traveler."',
 		},
 		{
 			id: 14,
-			text: "Do you like apples or oranges?",
+			text: '"Do you like apples or oranges better?"',
 			choices: [
 				{
 					number: 1,
@@ -312,45 +307,27 @@ function App() {
 					number: 2,
 					text: "APPLES!",
 					doAction: () => {fruitChoice.current = "apples"},
-					jumpTo: 16,
+					jumpTo: 15,
 				},
 				{
 					number: 3,
 					text: "None of the above.",
-					jumpTo: 17
+					jumpTo: 15
 				}
 			]
 		},
 		{
 			id: 15,
-			text: "I'll get you some orange juice then.",
-			jumpTo: 18
+			text: `"You like ${fruitChoice.current}. Good to know. So what brings you here? I do have some items to sell."`
 		},
 		{
 			id: 16,
-			text: "I'll get you some apple juice then.",
-			jumpTo: 18
-		},
-		{
-			id: 17,
-			text: "Fair enough."
-		},
-		{
-			id: 18,
-			text: "So what brings you here?"
-		},
-		{
-			id: 19,
-			text: `I assume it's for more than just looking for ${fruitChoice.current}.`
-		},
-		{
-			id: 20,
-			text: "Would you like to buy something?",
+			text: '"Would you like to buy something?"',
 			choices: [
 				{
 					number: 1,
 					text: "That's all, thank you.",
-					jumpTo: 22,
+					jumpTo: 18,
 				},
 				{
 					number: 2,
@@ -366,48 +343,114 @@ function App() {
 					}),
 					jumpTo: 21,
 				},
+				{
+					number: 3,
+					text: "Key - 20 Gold",
+					doAction: () => purchaseItem({
+						text: 'Key',
+						overworldOnly: true,
+						price: 20,
+						icon: 'src/assets/images/icons/key.png'
+					}),
+					jumpTo: 21,
+				}
 			]
 		},
 		{
-			id: 21,
+			id: 17,
 			text: enoughMoney.current ? `You purchased a ${lastPurchasedItem.current}.` : "You don't have enough gold for that item.",
-			jumpTo: 20,
+			jumpTo: 16,
 		},
 		{
-			id: 22,
-			text: 'Have a nice day then!'
+			id: 18,
+			text: '"Have a nice day then! Be sure to look out for monsters. They\'re not the nice kind that teach you the alphabet or numbers."',
+			jumpTo: alreadyFoughtSlime.current ? 21 : 19
 		},
 		{
-			id: 23,
-			text: "You found 10 gold in a treasure chest! I'm totally sure that no one will miss it if you take it.",
+			id: 19,
+			text: "You leave the village and journey into the wilderness."
+		},
+		{
+			id: 20,
+			text: "You find 10 gold in a treasure chest! I'm totally sure that no one will miss it if you take it.",
 			doAction: () => {moneyRef.current += 10; setMoney(moneyRef.current);},
 		},
 		{
-			id: 24,
-			text: "You continue on your journey.",
+			id: 21,
+			text: "You continue on your journey. Suddenly, a monster emerges from the bushes!",
+			doAction: () => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5, sprite: 'src/assets/images/sprites/slime.png', spriteAlt: 'Ghost enemy'})
 		},
 		{
-			id: 25,
+			id: 22,
+			text: "You continue on your journey.",
+			doAction: () => alreadyFoughtSlime.current = true
+		},
+		{
+			id: 23,
 			text: "You find a locked door.",
 			doAction: () => requestUseOverworldItem('Key'),
 		},
 		{
-			id: 26,
+			id: 24,
 			text: justUsedOverworldItem.current ? "You used a key to unlock it." : "You don't have a key, so you decide to continue exploring.",
-			jumpTo: justUsedOverworldItem.current ? 28 : 27
+			jumpTo: justUsedOverworldItem.current ? 26 : 25
 		},
 		{
-			id: 27,
-			text: "Where could that key be?",
+			id: 25,
+			text: "Where could that key be? Oh wait! That merchant was selling keys. You decide to go back.",
 			jumpTo: 20
 		},
 		{
+			id: 26,
+			text: "You open the door. Inside, you find a passage that splits into two directions."
+		},
+		{
+			id: 27,
+			text: 'Which direction should you go?',
+			choices: [
+				{
+					number: 1,
+					text: "Left.",
+					jumpTo: 28,
+				},
+				{
+					number: 2,
+					text: "Right.",
+					doAction: () => {fruitChoice.current = "apples"},
+					jumpTo: 29,
+				},
+			]
+		},
+		{
 			id: 28,
-			text: "You open the door."
+			text: 'As you head left, you wonder why the merchant was able to sell you a key that unlocked this place. Is that even legal?',
+			jumpTo: 30
+		},
+		{
+			id: 29,
+			text: `As you head right, you wonder how long it will take you navigate this place. Maybe you should have brought some ${fruitChoice.current} with you.`
+		},
+		{
+			id: 30,
+			text: 'From around a corner, a monster springs on you!',
+			doAction: () => startBattle({name: 'Ghost', health: 20, attack: 2, experience: 30, money: 25, sprite: 'src/assets/images/sprites/ghost.png', spriteAlt: 'Ghost enemy'})
+		},
+		{
+			id: 31,
+			text: 'You continue to walk through the corridor.'
+		},
+		{
+			id: 32,
+			text: 'You find a sign ahead of you that reads: "Thank you for playing this game demo! Click, tap, or activate the Next button again to go to the Github repository." I have no idea what that means.',
+			doAction: () => window.location = 'https://github.com/jacob-willden/the-cliche-rpg'
+		},
+		{
+			id: 33,
+			text: "Hmm."
 		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(24);
+	const [currentDialogueID, setCurrentDialogueID] = useState(31);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -416,6 +459,9 @@ function App() {
 		gainedExperience.current = enemy.experience;
 		gainedMoney.current = enemy.money;
 		justLeveledUp.current = false;
+
+		setCurrentSprite(enemy.sprite);
+		setCurrentSpriteAlt(enemy.spriteAlt);
 		
 		oldDialoguePlace.current = currentDialogueID;
 		//console.log(oldDialoguePlace.current);
@@ -726,7 +772,7 @@ function App() {
 		}
 	}
 
-	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/slime.png');
+	const [currentSprite, setCurrentSprite] = useState('');
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
 	const [currentAnimation, setCurrentAnimation] = useState('');
 	const [animationVisible, setAnimationVisible] = useState(false);
@@ -788,10 +834,6 @@ function App() {
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
-			{/* <button className='button' onClick={() => startBattle({name: 'Slime', health: 10, attack: 2, experience: 10, money: 5})}>startBattle</button>
-			<button className='button' onClick={() => {
-				console.log('soundEffectsMute:', soundEffectsMute);
-			}}>soundEffectsMute</button> */}
 			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
 			<img src={currentAnimation} alt='' id='sprite-animation' style={{opacity: animationVisible ? 1 : 0}} />
 			<audio ref={soundElementRef} src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
@@ -800,8 +842,6 @@ function App() {
 			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
-			<button onClick={() => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5})}>startBattle</button>
-			<button onClick={() => playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2)}>playAnimation</button>
 		</div>
 	);
 }
