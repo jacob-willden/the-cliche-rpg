@@ -28,8 +28,8 @@ function App() {
 				magicCost: 2
 			},
 			animation: {
-				visual: 'src/assets/images/animations/explosion_2.png',
-				audio: 'src/assets/sounds/effects/test.ogg',
+				visual: '/assets/images/animations/explosion_2.png',
+				audio: '/assets/sounds/effects/Gunfire.ogg',
 				duration: 2
 			}
 		}
@@ -44,8 +44,8 @@ function App() {
 				magic: 5
 			},
 			price: 10,
-			icon: 'src/assets/images/icons/health_potion.png',
-			sound: 'src/assets/sounds/effects/test.ogg'
+			icon: '/assets/images/icons/health_potion.png',
+			sound: '/assets/sounds/effects/Gunfire.ogg'
 		},
 	]);
 	const playerItemsRef = useRef();
@@ -336,8 +336,8 @@ function App() {
 							magic: 5
 						},
 						price: 10,
-						icon: 'src/assets/images/icons/health_potion.png',
-						sound: 'src/assets/sounds/effects/test.ogg'
+						icon: '/assets/images/icons/health_potion.png',
+						sound: '/assets/sounds/effects/Gunfire.ogg'
 					}),
 					jumpTo: 17,
 				},
@@ -353,8 +353,8 @@ function App() {
 							defenseTurns: 3
 						},
 						price: 15,
-						icon: 'src/assets/images/icons/tonic.png',
-						sound: 'src/assets/sounds/effects/test.ogg'
+						icon: '/assets/images/icons/tonic.png',
+						sound: '/assets/sounds/effects/Gunfire.ogg'
 					}),
 					jumpTo: 17,
 				},
@@ -365,7 +365,7 @@ function App() {
 						text: 'Key',
 						overworldOnly: true,
 						price: 20,
-						icon: 'src/assets/images/icons/key.png'
+						icon: '/assets/images/icons/key.png'
 					}),
 					jumpTo: 17,
 				}
@@ -384,7 +384,7 @@ function App() {
 		{
 			id: 19,
 			text: "You leave the village and journey into the wilderness.",
-			doAction: () => setBackground('src/assets/images/backgrounds/grassland_background.jpg')
+			doAction: () => setBackground('/assets/images/backgrounds/grassland_background.jpg')
 		},
 		{
 			id: 20,
@@ -400,7 +400,7 @@ function App() {
 		{
 			id: 21,
 			text: "You continue on your journey. Suddenly, a monster emerges from the bushes!",
-			doAction: () => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5, sprite: 'src/assets/images/sprites/slime.png', spriteAlt: 'Ghost enemy'}),
+			doAction: () => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5, sprite: '/assets/images/sprites/slime.png', spriteAlt: 'Ghost enemy'}),
 			battle: true
 		},
 		{
@@ -408,7 +408,7 @@ function App() {
 			text: "You continue on your journey.",
 			doAction: () => {
 				alreadyFoughtSlime.current = true;
-				if(background !== 'src/assets/images/backgrounds/grassland_background.jpg') setBackground('src/assets/images/backgrounds/grassland_background.jpg');
+				if(background !== '/assets/images/backgrounds/grassland_background.jpg') setBackground('/assets/images/backgrounds/grassland_background.jpg');
 			}
 		},
 		{
@@ -424,7 +424,7 @@ function App() {
 		{
 			id: 25,
 			text: "Where could that key be? Oh wait! That merchant was selling keys. You decide to go back.",
-			doAction: () => setBackground('src/assets/images/backgrounds/village_background.jpg'),
+			doAction: () => setBackground('/assets/images/backgrounds/village_background.jpg'),
 			jumpTo: 16
 		},
 		{
@@ -433,7 +433,7 @@ function App() {
 			doAction: () => {
 				playerItemsRef.current.splice(playerItemsRef.current.findIndex(item => item.text === 'Key'), 1);
 				setPlayerItems(playerItemsRef.current);
-				setBackground('src/assets/images/backgrounds/cave_background.jpg');
+				setBackground('/assets/images/backgrounds/cave_background.jpg');
 			}
 		},
 		{
@@ -465,7 +465,7 @@ function App() {
 		{
 			id: 30,
 			text: 'From around a corner, a monster springs on you!',
-			doAction: () => startBattle({name: 'Ghost', health: 20, attack: 2, experience: 30, money: 25, sprite: 'src/assets/images/sprites/ghost.png', spriteAlt: 'Ghost enemy'}),
+			doAction: () => startBattle({name: 'Ghost', health: 20, attack: 2, experience: 30, money: 25, sprite: '/assets/images/sprites/ghost.png', spriteAlt: 'Ghost enemy'}),
 			battle: true
 		},
 		{
@@ -615,7 +615,7 @@ function App() {
 			enemyHealth.current -= enemyDamage.current;
 			decrementBoostDuration();
 			enemyAttack();
-			playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2);
+			playAnimation('/assets/images/animations/explosion_1.png', '/assets/sounds/effects/Gunfire.ogg', 2);
 		}
 		setPlayerMagic(playerMagicRef.current);
 		setPlayerHealth(playerHealthRef.current);
@@ -844,7 +844,7 @@ function App() {
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
 	const [currentAnimation, setCurrentAnimation] = useState('');
 	const [animationVisible, setAnimationVisible] = useState(false);
-	const [background, setBackground] = useState('src/assets/images/backgrounds/village_background.jpg');
+	const [background, setBackground] = useState('/assets/images/backgrounds/village_background.jpg');
 
 	function playAnimation(animationPath, soundPath, duration) {
 		playSound(soundPath);
