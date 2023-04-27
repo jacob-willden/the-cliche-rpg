@@ -10,6 +10,9 @@
 
 You can stop the server by either using a keyboard shortcut to cancel the run command (e.g. Control-C), or by quitting the command line program.
 
+## Todos
+- Fix audio issues
+
 ## Licensing
 This project is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License (GNU GPL) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. The project is distributed WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for more details.
 
