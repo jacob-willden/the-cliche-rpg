@@ -693,6 +693,7 @@ function App() {
 						<input checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
 						Dark Mode
 					</label>
+					<a href='#'>Game Credits</a>
 				</div>
 			);
 		}
@@ -725,7 +726,7 @@ function App() {
 		}
 	}
 
-	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/alienYellow.png');
+	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/slime.png');
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
 	const [currentAnimation, setCurrentAnimation] = useState('');
 	const [animationVisible, setAnimationVisible] = useState(false);
@@ -751,7 +752,8 @@ function App() {
 	));
 	
 	return (
-		<div id='game' className={darkMode ? 'dark' : ''} style={{background: `url("${background}")`}}>
+		<div id='game' className={darkMode ? 'dark' : ''}>
+			<img id='background' src={background} alt='' />
 			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
