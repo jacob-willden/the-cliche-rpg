@@ -26,6 +26,11 @@ function App() {
 			effects: {
 				enemyDamage: 5,
 				magicCost: 2
+			},
+			animation: {
+				visual: 'src/assets/images/animations/explosion_2.png',
+				audio: 'src/assets/sounds/effects/test.ogg',
+				duration: 2
 			}
 		}
 	];
@@ -40,6 +45,7 @@ function App() {
 			},
 			price: 10,
 			icon: 'src/assets/images/icons/health_potion.png',
+			sound: 'src/assets/sounds/effects/test.ogg'
 		},
 		{
 			id: 1,
@@ -52,6 +58,7 @@ function App() {
 			},
 			price: 15,
 			icon: 'src/assets/images/icons/tonic.png',
+			sound: 'src/assets/sounds/effects/test.ogg'
 		},
 		{
 			id: 2,
@@ -462,6 +469,10 @@ function App() {
 
 			magicChoice.current = chosenMove.text;
 			enemyHealth.current -= enemyDamage.current;
+
+			if(chosenMove.animation?.visual && chosenMove.animation.audio && chosenMove.animation.duration) {
+				playAnimation(chosenMove.animation.visual, chosenMove.animation.audio, chosenMove.animation.duration);
+			}
 		}
 		else if(decision.category === 'item') {
 			itemResult.current = '';
@@ -511,12 +522,17 @@ function App() {
 			setPlayerItems(playerItemsRef.current);
 
 			enemyAttack();
+
+			if(chosenItem.sound) {
+				playSound(chosenItem.sound);
+			}
 		}
 		else { // Melee
 			enemyDamage.current = playerPower.current;
 			enemyHealth.current -= enemyDamage.current;
 			decrementBoostDuration();
 			enemyAttack();
+			playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2);
 		}
 		setPlayerMagic(playerMagicRef.current);
 		setPlayerHealth(playerHealthRef.current);
@@ -711,9 +727,9 @@ function App() {
 
 	const [currentSprite, setCurrentSprite] = useState('src/assets/images/sprites/alienYellow.png');
 	const [currentSpriteAlt, setCurrentSpriteAlt] = useState('');
-	const [currentAnimation, setCurrentAnimation] = useState('src/assets/images/animations/explosion_1.png');
+	const [currentAnimation, setCurrentAnimation] = useState('');
 	const [animationVisible, setAnimationVisible] = useState(false);
-	const [background, setBackground] = useState('');
+	const [background, setBackground] = useState('src/assets/images/backgrounds/grassland_background.jpg');
 
 	function playAnimation(animationPath, soundPath, duration) {
 		playSound(soundPath);
@@ -736,7 +752,6 @@ function App() {
 	
 	return (
 		<div id='game' className={darkMode ? 'dark' : ''} style={{background: `url("${background}")`}}>
-			<button onClick={() => playAnimation(currentAnimation, 'src/assets/sounds/effects/test.ogg', 2)}>playAnimation</button>
 			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
@@ -783,6 +798,8 @@ function App() {
 			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
+			<button onClick={() => startBattle({name: 'Slime', health: 10, attack: 1, experience: 10, money: 5})}>startBattle</button>
+			<button onClick={() => playAnimation('src/assets/images/animations/explosion_1.png', 'src/assets/sounds/effects/test.ogg', 2)}>playAnimation</button>
 		</div>
 	);
 }
