@@ -271,7 +271,7 @@ function App() {
 				{
 					number: 2,
 					text: "No, restart the game.",
-					doAction: () => console.log("end game"),
+					doAction: () => window.location = 'https://the-cliche-rpg.vercel.app/',
 					jumpTo: 12
 				},
 			]
@@ -483,7 +483,7 @@ function App() {
 		}
 	];
 
-	const [currentDialogueID, setCurrentDialogueID] = useState(15);
+	const [currentDialogueID, setCurrentDialogueID] = useState(13);
 
 	function startBattle(enemy) {
 		enemyName.current = enemy.name;
@@ -910,7 +910,6 @@ function App() {
 			<audio ref={musicElementRef} src={currentMusic} volume={musicMute ? 0 : musicVolume} loop>
 				Your browser does not support the audio element.
 			</audio>
-			<button onClick={console.log(playerItems)}>playerItems</button>
 		</div>
 	);
 }
