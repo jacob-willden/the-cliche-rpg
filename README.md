@@ -1,6 +1,10 @@
 # The Cliché RPG
 [Source Code Location](https://github.com/jacob-willden/the-cliche-rpg)
 
+This is a demo for a role-playing game (RPG) engine, with some clean, subpar humor mixed in. It's built using React, a JavaScript library, and is meant to be as accessible as possible by default. Everything can be done with a keyboard, touch screen, mouse, trackpad, or any assistive technology that can be used to access the Web.
+
+You can either [play the game on a live site](https://the-cliche-rpg.vercel.app/), or host it yourself using the following installation instructions.
+
 ## Installation Instructions
 1. Install [NPM](https://nodejs.org/en/download), if you don't already have it installed
 2. Download the repository and extract the ZIP file
