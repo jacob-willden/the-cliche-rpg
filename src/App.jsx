@@ -775,7 +775,7 @@ function App() {
 		checkForReducedMotion();
 	}, []);
 
-	function ModalContent({modalType}) {
+	function modalContent(modalType) {
 		if(modalType === 'options') {
 			return (
 				<div className='box'>
@@ -898,7 +898,7 @@ function App() {
 			<div className={`modal ${modalVisible ? 'is-active' : ''}`}>
 				<div className='modal-background'></div>
 				<div className='modal-content'>
-					<ModalContent modalType={modalTypeSelection} />
+					{modalContent(modalTypeSelection)}
 				</div>
 				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
 			</div>
