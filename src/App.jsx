@@ -1,3 +1,50 @@
+/*
+    @source: https://github.com/jacob-willden/the-cliche-rpg/
+	@source: https://github.com/geoffrich/geoffrich.net
+
+    @licstart  The following is the entire license notice this file.
+
+    This file is part of The Cliché RPG.
+    
+    The Cliché RPG Copyright (C) 2023 Jacob Willden
+    (Released under the GNU General Public License (GNU GPL) Version 3.0 or later)
+
+    Code Snippet from Geoff Rich Website Copyright (C) 2021 Geoff Rich
+    (Released under the MIT License (Expat License))
+
+    Some of the code below is provided by users from StackOverflow, and 
+	is explicitly stated as so. Such code is released under either the 
+	Creative Commons Attribution Share-Alike 3.0 or 4.0. I specify Creative 
+	Commons as my proxy to make the contributions from StackOverflow 
+	compatible with future versions of the GPL. One section of code below
+	is from Geoff Rich's Website, is released under the MIT (Expat) License, 
+	and is explicitly stated as so (the article with the code was published
+	on March 1, 2021).
+
+    Afformentioned source code derived and modified by Jacob Willden
+    Start Date of Derivation/Modification: April 8, 2023
+    Most Recent Date of Derivation/Modification: April 27, 2023
+
+    The Cliché RPG is free software: you can redistribute it and/or 
+	modify it under the terms of the GNU General Public License (GNU 
+	GPL) as published by the Free Software Foundation, either version 
+	3 of the License, or (at your option) any later version. The 
+	project is distributed WITHOUT ANY WARRANTY; without even the 
+	implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+	PURPOSE. See the GNU GPL for more details.
+
+    As additional permission under GNU GPL version 3 section 7, you
+    may distribute non-source (e.g., minimized or compacted) forms of
+    the code without the copy of the GNU GPL normally required by
+    section 4, provided you include this license notice and a URL
+    through which recipients can access the Corresponding Source.
+
+    You should have recieved a copy of the GNU General Public License
+    along with this project. Otherwise, see: https://www.gnu.org/licenses/
+
+    @licend  The above is the entire license notice for this file.
+*/
+
 import {useState, useRef, useEffect} from 'react';
 import './bulma.min.css';
 import './App.css';
@@ -770,7 +817,30 @@ function App() {
 	}
 
 	useEffect(() => {
-		// Event listener modified from example here: https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
+		// Event listener modified from example by Geoff Rich, under the Expat (MIT) License (see full attribution below): https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
+		/* 
+			MIT License (Expat License)
+
+			Copyright (c) 2019 andy-bell.design and other contributors
+
+			Permission is hereby granted, free of charge, to any person obtaining a copy
+			of this software and associated documentation files (the "Software"), to deal
+			in the Software without restriction, including without limitation the rights
+			to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+			copies of the Software, and to permit persons to whom the Software is
+			furnished to do so, subject to the following conditions:
+
+			The above copyright notice and this permission notice shall be included in all
+			copies or substantial portions of the Software.
+
+			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+			IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+			FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+			AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+			LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+			OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+			SOFTWARE.
+		*/
 		window.matchMedia('(prefers-reduced-motion: no-preference)').addEventListener('change', checkForReducedMotion);
 		checkForReducedMotion();
 	}, []);
