@@ -817,7 +817,7 @@ function App() {
 	}
 
 	useEffect(() => {
-		// Event listener modified from example by Geoff Rich, under the Expat (MIT) License (see full attribution below): https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
+		// Event listener modified from an example by Geoff Rich, under the Expat (MIT) License (see full attribution below): https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
 		/* 
 			MIT License (Expat License)
 
@@ -885,8 +885,8 @@ function App() {
 			return (
 				<div className='box'>
 					<ul>
-					{playerItems.map((item, index) => (
-						<li key={index}>
+					{playerItems.map(item => (
+						<li key={item.id}>
 							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''} <img src={item.icon} alt='' className='item-icon' />
 							<ul>
 								{item.playerEffects?.health ? (<li>+ {item.playerEffects.health} Health</li>) : ''}
