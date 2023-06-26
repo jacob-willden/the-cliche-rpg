@@ -878,7 +878,7 @@ function App() {
 						<input checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
 						Dark Mode
 					</label>
-					<a href='#'>Game Credits</a>
+					<a href='https://github.com/jacob-willden/the-cliche-rpg'>Game Credits and Source Code</a>
 				</div>
 			);
 		}
