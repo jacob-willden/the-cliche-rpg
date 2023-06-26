@@ -767,7 +767,8 @@ function App() {
 		setCurrentDialogueID(jumpTo);
 	}
 
-	const [modalVisible, setModalVisible] = useState(false);
+	const modalElement = useRef(null);
+	const [modalClass, setModalClass] = useState('');
 	const [modalTypeSelection, setModalTypeSelection] = useState('');
 
 	const [soundEffectsVolume, setSoundEffectsVolume] = useState(100);
@@ -931,6 +932,16 @@ function App() {
 		}
 	}
 
+	function openModal() {
+		setModalClass('is-active');
+		modalElement.current.showModal();
+	}
+
+	function closeModal() {
+		setModalClass('');
+		modalElement.current.close();
+	}
+
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.number} className='button choice'>{choice.text}</button>
 	));
@@ -938,8 +949,8 @@ function App() {
 	return (
 		<div id='game' className={darkMode ? 'dark' : ''}>
 			<img id='background' src={background} alt='' />
-			<button onClick={() => {setModalTypeSelection('options'); setModalVisible(true);}} id='options-button' className='button'>Options</button>
-			<button onClick={() => {setModalTypeSelection('inventory'); setModalVisible(true);}} id='inventory-button' className='button'>Inventory</button>
+			<button onClick={() => {setModalTypeSelection('options'); openModal();}} id='options-button' className='button'>Options</button>
+			<button onClick={() => {setModalTypeSelection('inventory'); openModal();}} id='inventory-button' className='button'>Inventory</button>
 			<div id='choices-view'>
 				<div id='choices-list'>
 					{choiceButtons}
@@ -965,13 +976,13 @@ function App() {
 				<p id='primary-textbox-text'>{dialogueList[currentDialogueID].text}</p>
 				<button onClick={nextButton} className={`button next-button ${showNextButton ? '' : 'hidden-next-button'}`}>Next</button>
 			</div>
-			<div className={`modal ${modalVisible ? 'is-active' : ''}`}>
+			<dialog ref={modalElement} className={`modal ${modalClass}`}>
 				<div className='modal-background'></div>
 				<div className='modal-content'>
 					{modalContent(modalTypeSelection)}
 				</div>
-				<button onClick={() => {setModalVisible(false)}} className='modal-close is-large' aria-label='Close'></button>
-			</div>
+				<button onClick={closeModal} className='modal-close is-large' aria-label='Close'></button>
+			</dialog>
 			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
 			<img src={currentAnimation} alt='' id='sprite-animation' style={{opacity: animationVisible ? 1 : 0}} />
 			<audio ref={soundElementRef} src={currentSound} volume={soundEffectsMute ? 0 : soundEffectsVolume}>
