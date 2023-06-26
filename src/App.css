@@ -67,8 +67,13 @@ input[type="number"] {
 	margin: 1rem 0;
 }
 
-.checkbox input {
-	margin-right: 0.25rem;
+.modal label {
+	display: block;
+}
+
+.modal .checkbox label {
+	display: inline;
+	padding-left: 0.25rem;
 }
 
 #game.dark .checkbox:hover, #game.dark .radio:hover {

@@ -850,34 +850,34 @@ function App() {
 		if(modalType === 'options') {
 			return (
 				<div className='box'>
-					<label>
-						<p>Sound Effects Volume (Percent)</p>
-						<input value={soundEffectsVolume} onChange={(event) => setSoundEffectsVolume(event.target.value)} type='number' min="0" max="100" />
-					</label>
-					<label className='checkbox'>
-						<input checked={soundEffectsMute} onChange={(event) => setSoundEffectsMute(event.target.checked)} type='checkbox' />
-						Mute Sound Effects
-					</label>
-					<label>
-						<p>Music Volume (Percent)</p>
-						<input value={musicVolume} onChange={(event) => setMusicVolume(event.target.value)} type='number' min="0" max="100" />
-					</label>
-					<label className='checkbox'>
-						<input checked={musicMute} onChange={(event) => setMusicMute(event.target.checked)} type='checkbox' />
-						Mute Music
-					</label>
-					<label className='checkbox'>
-						<input checked={prefersReducedMotion} onChange={(event) => {
+					<div>
+						<label htmlFor='sound-volume'>Sound Effects Volume (Percent)</label>
+						<input id='sound-volume' value={soundEffectsVolume} onChange={(event) => setSoundEffectsVolume(event.target.value)} type='number' min="0" max="100" />
+					</div>
+					<div className='checkbox'>
+						<input id='mute-sound' checked={soundEffectsMute} onChange={(event) => setSoundEffectsMute(event.target.checked)} type='checkbox' />
+						<label htmlFor='mute-sound'>Mute Sound Effects</label>
+					</div>
+					<div>
+						<label htmlFor='music-volume'>Music Volume (Percent)</label>
+						<input id='music-volume' value={musicVolume} onChange={(event) => setMusicVolume(event.target.value)} type='number' min="0" max="100" />
+					</div>
+					<div className='checkbox'>
+						<input id='mute-music' checked={musicMute} onChange={(event) => setMusicMute(event.target.checked)} type='checkbox' />
+						<label htmlFor='mute-music'>Mute Music</label>
+					</div>
+					<div className='checkbox'>
+						<input id='reduce-motion' checked={prefersReducedMotion} onChange={(event) => {
 							prefersReducedMotionRef.current = event.target.checked;
 							setPrefersReducedMotion(prefersReducedMotionRef.current);
 							checkForReducedMotion();
 						}} type='checkbox' />
-						Prefer Reduced Motion
-					</label>
-					<label className='checkbox'>
-						<input checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
-						Dark Mode
-					</label>
+						<label htmlFor='reduce-motion'>Prefer Reduced Motion</label>
+					</div>
+					<div className='checkbox'>
+						<input id='dark-mode' checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
+						<label htmlFor='dark-mode'>Dark Mode</label>
+					</div>
 					<a href='https://github.com/jacob-willden/the-cliche-rpg'>Game Credits and Source Code</a>
 				</div>
 			);
@@ -887,7 +887,7 @@ function App() {
 				<div className='box'>
 					<ul>
 					{playerItems.map(item => (
-						<li key={item.id}>
+						<li key={item.id.toString()}>
 							{item.text} {item.overworldOnly ? '(Overworld Only)' : ''} <img src={item.icon} alt='' className='item-icon' />
 							<ul>
 								{item.playerEffects?.health ? (<li>+ {item.playerEffects.health} Health</li>) : ''}
