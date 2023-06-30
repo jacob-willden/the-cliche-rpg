@@ -979,9 +979,9 @@ function App() {
 			<dialog ref={modalElement} className={`modal ${modalClass}`}>
 				<div className='modal-background'></div>
 				<div className='modal-content'>
+					<button onClick={closeModal} className='modal-close is-large' aria-label='Close'></button>
 					{modalContent(modalTypeSelection)}
 				</div>
-				<button onClick={closeModal} className='modal-close is-large' aria-label='Close'></button>
 			</dialog>
 			<img src={currentSprite} alt={currentSpriteAlt} id='sprite' />
 			<img src={currentAnimation} alt='' id='sprite-animation' style={{opacity: animationVisible ? 1 : 0}} />
