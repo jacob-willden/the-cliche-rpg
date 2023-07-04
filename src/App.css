@@ -31,15 +31,16 @@
 }
 
 a {
-	color: #3850B7;
+	color: #1432b7;
+	text-decoration: underline;
 }
 
 #game.dark a {
-	color: #8F9DDC;
+	color: #e3e7ff;
 }
 
 #game.dark a:hover {
-	color: #CCD1F0;
+	color: #fff;
 }
 
 .button {
@@ -74,6 +75,10 @@ input[type="number"] {
 .modal .checkbox label {
 	display: inline;
 	padding-left: 0.25rem;
+}
+
+.modal-close {
+	background-color: rgba(10, 10, 10, 0.3);
 }
 
 #game.dark .checkbox:hover, #game.dark .radio:hover {

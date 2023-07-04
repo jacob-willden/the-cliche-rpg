@@ -812,7 +812,7 @@ function App() {
 			setReduceMotion(false);
 		}
 		else {
-			console.log('prefersReducedMotionRef:', prefersReducedMotionRef.current)
+			//console.log('prefersReducedMotionRef:', prefersReducedMotionRef.current)
 			setReduceMotion(true);
 		}
 	}
