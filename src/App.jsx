@@ -958,18 +958,18 @@ function App() {
 			</div>
 			<div id='reserves'>
 				<div className='card'>
-					<output>
+					<div>
 						Health: <span id='health'>{playerHealth}</span> / <span id='max-health'>{maxPlayerHealth}</span>
-					</output>
-					<output>
+					</div>
+					<div>
 						Magic: <span id='magic'>{playerMagic}</span> / <span id='max-magic'>{maxPlayerMagic}</span>
-					</output>
-					<output>
+					</div>
+					<div>
 						Experience: <span id='experience'>{experience}</span>
-					</output>
-					<output>
+					</div>
+					<div>
 						Gold: <span id='money'>{money}</span>
-					</output>
+					</div>
 				</div>
 			</div>
 			<div id='primary-textbox' className='card'>
