@@ -948,7 +948,7 @@ function App() {
 	
 	return (
 		<div id='game' className={darkMode ? 'dark' : ''}>
-			<h1 class="card">The Cliché RPG</h1>
+			<h1 className="card">The Cliché RPG</h1>
 			<img id='background' src={background} alt='' />
 			<button onClick={() => {setModalTypeSelection('options'); openModal();}} id='options-button' className='button'>Options</button>
 			<button onClick={() => {setModalTypeSelection('inventory'); openModal();}} id='inventory-button' className='button'>Inventory</button>
