@@ -1,7 +1,9 @@
 # The Cliché RPG
 [Source Code Location](https://github.com/jacob-willden/the-cliche-rpg)
 
-This is a demo for a role-playing game (RPG) engine, with some clean, subpar humor mixed in. It's built using React, a JavaScript library, and is meant to be as accessible as possible by default. Everything can be done with a keyboard, touch screen, mouse, trackpad, or any assistive technology that can be used to access the Web.
+This is a work in progress demo for a role-playing game (RPG) engine, with some clean, subpar humor mixed in. It's built using React, a JavaScript library. Everything is meant to be accessible, whether with a keyboard, touch screen, mouse, trackpad, or any assistive technology that can be used to access the Web. All the same, there's always something I might miss, so I'm completely open to any changes that will make this project more accessible (and this applies to any of my projects).
+
+Note: The HTML utilizes the `dialog` element, which has only seen wide support in the past couple of years (see [dialog element support on "Can I Use"](https://caniuse.com/?search=dialog)), so testing will be needed in order to know how legacy software responds to the markup.
 
 You can either [play the game on a live site](https://the-cliche-rpg.vercel.app/), or host it yourself using the following installation instructions.
 
