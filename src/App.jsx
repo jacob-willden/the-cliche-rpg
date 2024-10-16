@@ -14,12 +14,12 @@
 
     Some of the code below is provided by users from StackOverflow, and 
 	is explicitly stated as so. Such code is released under either the 
-	Creative Commons Attribution Share-Alike 3.0 or 4.0. I specify Creative 
-	Commons as my proxy to make the contributions from StackOverflow 
-	compatible with future versions of the GPL. One section of code below
-	is from Geoff Rich's Website, is released under the MIT (Expat) License, 
-	and is explicitly stated as so (the article with the code was published
-	on March 1, 2021).
+	Creative Commons Attribution Share-Alike (CC BY-SA) 3.0 or 4.0. 
+ 	I specify Creative Commons as my proxy to make the contributions 
+  	from StackOverflow compatible with future versions of the GPL. One 
+   	section of code below	is from Geoff Rich's Website, is released 
+    	under the MIT (Expat) License, and is explicitly stated as so (the 
+     	article with the code was published on March 1, 2021).
 
     Afformentioned source code derived and modified by Jacob Willden
     Start Date of Derivation/Modification: April 8, 2023
@@ -52,7 +52,7 @@ import './App.css';
 function App() {
 	const [playerHealth, setPlayerHealth] = useState(100);
 	const playerHealthRef = useRef();
-	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow: https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
+	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow (CC BY-SA 4.0): https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
 	
 	const [playerMagic, setPlayerMagic] = useState(2);
 	const playerMagicRef = useRef();
@@ -713,7 +713,7 @@ function App() {
 
 		justUsedOverworldItem.current = false;
 
-		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
+		// Run method only if the object contains it, from dfsq on StackOverflow (CC BY-SA 3.0): https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
 		if(typeof currentDialogue.doAction === 'function') {
 			currentDialogue.doAction();
 		}
@@ -749,7 +749,7 @@ function App() {
 		const number = event.target.getAttribute('data-number') * 1;
 		const variableFunction = dialogueList[currentDialogueID].choices?.find(choice => choice.number === number);
 
-		// Run method only if the object contains it, from dfsq on StackOverflow: https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
+		// Run method only if the object contains it, from dfsq on StackOverflow (CC BY-SA 3.0): https://stackoverflow.com/questions/14961891/how-to-check-if-an-object-has-a-function-dojo
 		if(typeof variableFunction.doAction === 'function') {
 			variableFunction.doAction();
 		}
