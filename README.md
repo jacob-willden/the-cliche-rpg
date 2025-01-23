@@ -17,7 +17,7 @@ You can either [play the game on a live site](https://the-cliche-rpg.vercel.app/
 You can stop the server by either using a keyboard shortcut to cancel the run command (e.g. <kbd>Control</kbd>+<kbd>C</kbd>), or by quitting the command line program.
 
 ## Todos
-- Fix audio issues
+- Add music?
 - Add assistive technology testing results
 
 ## Licensing
