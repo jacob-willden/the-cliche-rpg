@@ -5,32 +5,32 @@
     @licstart  The following is the entire license notice this file.
 
     This file is part of The Cliché RPG.
-    
+
     The Cliché RPG Copyright (C) 2023 Jacob Willden
     (Released under the GNU General Public License (GNU GPL) Version 3.0 or later)
 
     Code Snippet from Geoff Rich Website Copyright (C) 2021 Geoff Rich
     (Released under the MIT License (Expat License))
 
-    Some of the code below is provided by users from StackOverflow, and 
-	is explicitly stated as so. Such code is released under either the 
-	Creative Commons Attribution Share-Alike (CC BY-SA) 3.0 or 4.0. 
- 	I specify Creative Commons as my proxy to make the contributions 
-  	from StackOverflow compatible with future versions of the GPL. One 
-   	section of code below	is from Geoff Rich's Website, is released 
-    	under the MIT (Expat) License, and is explicitly stated as so (the 
+    Some of the code below is provided by users from StackOverflow, and
+	is explicitly stated as so. Such code is released under either the
+	Creative Commons Attribution Share-Alike (CC BY-SA) 3.0 or 4.0.
+ 	I specify Creative Commons as my proxy to make the contributions
+  	from StackOverflow compatible with future versions of the GPL. One
+   	section of code below	is from Geoff Rich's Website, is released
+    	under the MIT (Expat) License, and is explicitly stated as so (the
      	article with the code was published on March 1, 2021).
 
     Afformentioned source code derived and modified by Jacob Willden
     Start Date of Derivation/Modification: April 8, 2023
     Most Recent Date of Derivation/Modification: April 27, 2023
 
-    The Cliché RPG is free software: you can redistribute it and/or 
-	modify it under the terms of the GNU General Public License (GNU 
-	GPL) as published by the Free Software Foundation, either version 
-	3 of the License, or (at your option) any later version. The 
-	project is distributed WITHOUT ANY WARRANTY; without even the 
-	implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    The Cliché RPG is free software: you can redistribute it and/or
+	modify it under the terms of the GNU General Public License (GNU
+	GPL) as published by the Free Software Foundation, either version
+	3 of the License, or (at your option) any later version. The
+	project is distributed WITHOUT ANY WARRANTY; without even the
+	implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 	PURPOSE. See the GNU GPL for more details.
 
     As additional permission under GNU GPL version 3 section 7, you
@@ -53,7 +53,7 @@ function App() {
 	const [playerHealth, setPlayerHealth] = useState(100);
 	const playerHealthRef = useRef();
 	playerHealthRef.current = playerHealth; // Set as both useState and useRef, from Brandon on StackOverflow (CC BY-SA 4.0): https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
-	
+
 	const [playerMagic, setPlayerMagic] = useState(2);
 	const playerMagicRef = useRef();
 	playerMagicRef.current = playerMagic;
@@ -150,7 +150,7 @@ function App() {
 	const enemyName = useRef('');
 	const enemyHealth = useRef(1);
 	const enemyPower = useRef(1);
-	
+
 	const playerDamage = useRef(0);
 	const enemyDamage = useRef(0);
 
@@ -169,7 +169,7 @@ function App() {
 				lastPurchasedItem.current = item.text;
 				enoughMoney.current = true;
 				moneyRef.current -= item.price;
-	
+
 				playerItemsRef.current = [
 					...playerItemsRef.current,
 					{
@@ -177,7 +177,7 @@ function App() {
 						...item
 					}
 				];
-	
+
 				setMoney(moneyRef.current);
 				setPlayerItems(playerItemsRef.current);
 			}
@@ -206,7 +206,7 @@ function App() {
 	const [choices, setChoices] = useState([]);
 	const choicesRef = useRef();
 	choicesRef.current = choices;
-	
+
 	const fruitChoice = useRef('non-existent fruits');
 	const alreadyFoughtSlime = useRef(false);
 
@@ -542,7 +542,7 @@ function App() {
 
 		setCurrentSprite(enemy.sprite);
 		setCurrentSpriteAlt(enemy.spriteAlt);
-		
+
 		oldDialoguePlace.current = currentDialogueID + 1;
 		//console.log(oldDialoguePlace.current);
 		setCurrentDialogueID(0);
@@ -575,7 +575,7 @@ function App() {
 	function getTurnResult(decision) {
 		const selection = decision.selection;
 		//console.log(`${decision.category} ${selection} + enemy attack`);
-		
+
 		if(decision.category === 'magic') {
 			const chosenMove = playerMagicMoves.find(move => move.id === selection);
 
@@ -819,7 +819,7 @@ function App() {
 
 	useEffect(() => {
 		// Event listener modified from an example by Geoff Rich, under the Expat (MIT) License (see full attribution below): https://geoffrich.net/posts/svelte-prefers-reduced-motion-store/
-		/* 
+		/*
 			MIT License (Expat License)
 
 			Copyright (c) 2019 andy-bell.design and other contributors
@@ -878,6 +878,7 @@ function App() {
 						<input id='dark-mode' checked={darkMode} onChange={(event) => setDarkMode(event.target.checked)} type='checkbox' />
 						<label htmlFor='dark-mode'>Dark Mode</label>
 					</div>
+					<a href='javascript.html' id='js-licenses'>JavaScript Licenses</a>
 					<a href='https://github.com/jacob-willden/the-cliche-rpg'>Game Credits and Source Code</a>
 				</div>
 			);
@@ -895,7 +896,7 @@ function App() {
 								{item.playerEffects?.magic ? (<li>+ {item.playerEffects.magic} Magic</li>) : ''}
 
 								{item.playerEffects?.powerAmount && item.playerEffects?.powerTurns ? (<li>{item.playerEffects.powerAmount}x Power Boost for {item.playerEffects.powerTurns} Turns</li>) : ''}
-								
+
 								{item.playerEffects?.defenseAmount && item.playerEffects?.defenseTurns ? (<li>{item.playerEffects.defenseAmount}x Defense Boost for {item.playerEffects.defenseTurns} Turns</li>) : ''}
 							</ul>
 						</li>
@@ -945,7 +946,7 @@ function App() {
 	const choiceButtons = choices.map(choice => (
 		<button onClick={dialogueChoiceButton} data-number={choice.number} data-jumpto={choice.jumpTo} key={choice.number} className='button choice'>{choice.text}</button>
 	));
-	
+
 	return (
 		<div id='game' className={darkMode ? 'dark' : ''}>
 			<h1 className="card">The Cliché RPG</h1>

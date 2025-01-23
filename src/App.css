@@ -3,7 +3,7 @@
 	padding: 2rem 2rem 0 2rem;
 	height: 100vh;
 	display: grid;
-	grid-template-areas: 
+	grid-template-areas:
 		"options inventory"
 		"choices reserves"
 		"primary-textbox primary-textbox"
@@ -251,6 +251,16 @@ dialog::backdrop {
 	max-width: 3rem;
 	height: 3rem;
 	margin-left: 1rem;
+}
+
+/* Only needs to be viewed by LibreJS, another link is available in the interface. */
+a[rel="jslicense"] {
+	display: none;
+}
+
+#js-licenses {
+	display: block;
+	margin-bottom: 1rem;
 }
 
 @media (max-width: 24rem) {
