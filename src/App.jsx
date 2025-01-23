@@ -76,7 +76,7 @@ function App() {
 			},
 			animation: {
 				visual: '/assets/images/animations/explosion_2.png',
-				audio: '/assets/sounds/effects/Gunfire.ogg',
+				audio: '/assets/sounds/effects/Gunfire.webm',
 				duration: 2
 			}
 		}
@@ -92,7 +92,7 @@ function App() {
 			},
 			price: 10,
 			icon: '/assets/images/icons/health_potion.png',
-			sound: '/assets/sounds/effects/Gunfire.ogg'
+			sound: '/assets/sounds/effects/Gunfire.webm'
 		},
 	]);
 	const playerItemsRef = useRef();
@@ -384,7 +384,7 @@ function App() {
 						},
 						price: 10,
 						icon: '/assets/images/icons/health_potion.png',
-						sound: '/assets/sounds/effects/Gunfire.ogg'
+						sound: '/assets/sounds/effects/Gunfire.webm'
 					}),
 					jumpTo: 17,
 				},
@@ -401,7 +401,7 @@ function App() {
 						},
 						price: 15,
 						icon: '/assets/images/icons/tonic.png',
-						sound: '/assets/sounds/effects/Gunfire.ogg'
+						sound: '/assets/sounds/effects/Gunfire.webm'
 					}),
 					jumpTo: 17,
 				},
@@ -521,7 +521,7 @@ function App() {
 		},
 		{
 			id: 32,
-			text: 'You find a sign ahead of you that reads: "Thank you for playing this game demo! Click, tap, or activate the Next button again to go to the Github repository." I have no idea what that means.',
+			text: 'You find a sign ahead of you that reads: "Thank you for playing this game demo! Click, tap, or activate the Next button again to go to the GitHub repository." I have no idea what that means.',
 			doAction: () => window.location = 'https://github.com/jacob-willden/the-cliche-rpg'
 		},
 		{
@@ -662,7 +662,7 @@ function App() {
 			enemyHealth.current -= enemyDamage.current;
 			decrementBoostDuration();
 			enemyAttack();
-			playAnimation('/assets/images/animations/explosion_1.png', '/assets/sounds/effects/Gunfire.ogg', 2);
+			playAnimation('/assets/images/animations/explosion_1.png', '/assets/sounds/effects/Gunfire.webm', 2);
 		}
 		setPlayerMagic(playerMagicRef.current);
 		setPlayerHealth(playerHealthRef.current);
